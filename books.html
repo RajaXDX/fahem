@@ -12,16 +12,44 @@
 <style>
 *{box-sizing:border-box}html,body{margin:0}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.75}
-.wrap{--acc:var(--social);--acc-soft:var(--social-soft);max-width:900px;margin:0 auto;padding-inline:16px;padding-block:20px 60px;display:flex;flex-direction:column;gap:14px}
+[hidden]{display:none!important}
+.wrap{--acc:var(--gold);--acc-soft:var(--gold-soft);max-width:900px;margin:0 auto;padding-inline:16px;padding-block:20px 60px;display:flex;flex-direction:column;gap:14px}
+.wrap[data-b="e"]{--acc:var(--social);--acc-soft:var(--social-soft)}
+.wrap[data-b="i"]{--acc:var(--tajweed);--acc-soft:var(--tajweed-soft)}
 a{color:var(--acc)}
 h1{font-family:var(--display);font-size:clamp(1.4rem,4vw,2rem);margin:0}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+/* شاشة الاختيار */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:18px;max-width:720px;width:100%}
+.stitle{font-family:var(--display);font-size:1.25rem;margin:0}
+.ref{color:var(--muted);font-size:.85rem;margin:0}
+.sstep{display:flex;flex-direction:column;gap:8px}
+.sstep>b{font-size:.95rem}
+.pick2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.bpick{appearance:none;font:inherit;text-align:right;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:2px;min-width:0}
+.bpick b{font-family:var(--display);font-size:1.05rem}
+.bpick span{font-size:.82rem;color:var(--muted)}
+.bpick[data-b="e"][aria-pressed="true"]{border-color:var(--social);background:var(--social-soft)}
+.bpick[data-b="e"][aria-pressed="true"] b{color:var(--social)}
+.bpick[data-b="i"][aria-pressed="true"]{border-color:var(--tajweed);background:var(--tajweed-soft)}
+.bpick[data-b="i"][aria-pressed="true"] b{color:var(--tajweed)}
+.chipbar{display:flex;gap:8px;flex-wrap:wrap}
+.chipbar button{appearance:none;font:inherit;font-size:.88rem;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:4px 14px;cursor:pointer}
+.chipbar button[aria-pressed="true"]{border-color:var(--acc);color:var(--acc);font-weight:600}
+.btn{appearance:none;font:inherit;font-weight:600;border-radius:10px;padding:10px 20px;cursor:pointer;border:1.5px solid var(--acc);background:var(--acc);color:var(--surface);align-self:flex-start}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* عارض الكتاب */
+.viewer{display:flex;flex-direction:column;gap:14px}
+.back{appearance:none;border:0;background:none;color:var(--acc);font:inherit;font-weight:600;cursor:pointer;padding:0;align-self:flex-start}
+.vtitle{font-family:var(--display);font-size:1.1rem;margin:0;color:var(--acc)}
 .bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px;display:flex;flex-direction:column;gap:8px}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.seg{display:inline-flex;gap:4px;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:999px}
+.seg{display:inline-flex;gap:4px;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:999px;align-self:flex-start}
 .seg button{appearance:none;border:0;background:none;color:var(--muted);font:inherit;font-weight:600;padding:6px 16px;border-radius:999px;cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--acc);color:var(--surface)}
 .nav{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.nav button,.nav select{font:inherit;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:6px 12px;cursor:pointer}
+.nav button,.nav select{font:inherit;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:6px 12px;cursor:pointer;max-width:100%}
 .nav input{width:5.5em;font:inherit;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:6px 10px}
 .pg{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .pg img{display:block;width:100%;height:auto}
@@ -29,13 +57,11 @@ h1{font-family:var(--display);font-size:clamp(1.4rem,4vw,2rem);margin:0}
 .sol h2{font-family:var(--display);font-size:1rem;margin:0;color:var(--ok)}
 .q{font-weight:600}
 .a{white-space:pre-line;background:var(--ok-soft);border-radius:10px;padding:8px 12px;margin-top:4px}
-.none{color:var(--muted);font-size:.92rem}
-.hint{color:var(--muted);font-size:.85rem;margin:0}
-button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.none{color:var(--muted);font-size:.92rem;margin:0}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="wrap" id="wrap" data-b="">
   <header class="top">
     <a class="logo" href="./" aria-label="فاهم · الصفحة الرئيسية"><span class="logo-mark" aria-hidden="true">ف</span><span class="logo-word">فاهم<small>ملخصات أول متوسط</small></span></a>
     <div class="top-end"><a class="homelink" href="./"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>الرئيسية</a><button type="button" class="themebtn" id="themebtn" aria-label="الوضع الداكن"></button></div>
@@ -48,21 +74,24 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
     <a class="mode" href="books.html" aria-current="page">الكتب</a>
   </nav>
   <h1>الكتب المحلولة</h1>
-  <p class="hint">الصف الأول المتوسط · الفصل الدراسي الأول. اختر الكتاب، واختر «محلول» عشان تطلع الحلول تحت كل صفحة، أو «غير محلول» عشان تحل بنفسك.</p>
-  <div class="bar">
-    <div class="row">
-      <div class="seg" id="books"><button data-b="e" aria-pressed="true">الاجتماعيات</button><button data-b="i" aria-pressed="false">الدراسات الإسلامية</button></div>
+
+  <section class="card" id="setup"></section>
+
+  <section class="viewer" id="viewer" hidden>
+    <button type="button" class="back" id="change">→ غيّر الكتاب أو الوحدة</button>
+    <h2 class="vtitle" id="vtitle"></h2>
+    <div class="bar">
       <div class="seg" id="modes"><button data-m="1" aria-pressed="true">محلول</button><button data-m="0" aria-pressed="false">غير محلول</button></div>
+      <div class="nav">
+        <button id="prev">→ السابقة</button>
+        <span>صفحة</span><input id="num" type="number" min="1" inputmode="numeric" aria-label="رقم الصفحة"><span id="of"></span>
+        <button id="next">التالية ←</button>
+        <select id="jump" aria-label="انتقل إلى صفحة فيها حلول"></select>
+      </div>
     </div>
-    <div class="nav">
-      <button id="prev">→ السابقة</button>
-      <span>صفحة</span><input id="num" type="number" min="1" inputmode="numeric"><span id="of"></span>
-      <button id="next">التالية ←</button>
-      <select id="jump" aria-label="انتقل إلى صفحة فيها أسئلة"></select>
-    </div>
-  </div>
-  <div class="pg"><img id="img" alt="" width="1211" height="1454"></div>
-  <section class="sol" id="sol"></section>
+    <div class="pg"><img id="img" alt="" width="1211" height="1454"></div>
+    <section class="sol" id="sol"></section>
+  </section>
 </div>
 <script>const SOL={e:{},i:{}};</script>
 <script src="sol/e1.js"></script><script src="sol/e2.js"></script><script src="sol/e3.js"></script>
@@ -71,31 +100,70 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 <script src="sol/i1.js"></script><script src="sol/i2.js"></script><script src="sol/i3.js"></script>
 <script>
 const N={e:258,i:246},NAME={e:"الاجتماعيات",i:"الدراسات الإسلامية"};
+/* بداية كل وحدة أو قسم (رقم الصفحة في الكتاب) */
+const PARTS={
+  e:[[10,"الوحدة الأولى: الكون والأرض"],[44,"الوحدة الثانية: الحضارات"],[76,"الوحدة الثالثة: التخطيط"],[90,"الوحدة الرابعة: العصر النبوي"],[150,"الوحدة الخامسة: عصر الخلفاء الراشدين"],[184,"الوحدة السادسة: الهوية الشخصية"],[202,"الوحدة السابعة: الأمن الوطني"],[236,"الوحدة الثامنة: الحوار"]],
+  i:[[13,"التوحيد"],[55,"التفسير"],[119,"الحديث"],[167,"الفقه"]]
+};
 const ar=n=>n.toLocaleString("ar-SA");
 const st={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
-let book=st.get("bk")==="i"?"i":"e", solved=st.get("bm")!=="0", page=Number(st.get("bp_"+book))||1;
 const $=id=>document.getElementById(id);
 const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const solvedCount=k=>Object.keys(SOL[k]).length;
+
+/* الكتاب ما ينختار تلقائيًا: الطالب يختار ثم يضغط «افتح الكتاب» */
+let book=null, start=null, solved=st.get("bm")!=="0", page=1;
+const saved=k=>Number(st.get("bp_"+k))||0;
+
+function renderSetup(){
+  $("viewer").hidden=true;$("setup").hidden=false;$("wrap").dataset.b=book||"";
+  const s=$("setup");
+  let starts=[];
+  if(book){
+    if(saved(book)>1)starts.push([String(saved(book)),`كمّل من صفحة ${ar(saved(book))}`]);
+    starts.push(["1","من أول الكتاب"],...PARTS[book].map(([p,t])=>[String(p),t]));
+    if(start==null||!starts.some(([v])=>v===start))start=starts[0][0];
+  }
+  s.innerHTML=`<div><h2 class="stitle">افتح كتاب</h2><p class="ref">اختر الكتاب، وبعدها اضغط «افتح الكتاب».</p></div>
+    <div class="sstep"><b>١. اختر الكتاب</b>
+      <div class="pick2">${Object.keys(NAME).map(k=>`<button type="button" class="bpick" data-b="${k}" aria-pressed="${book===k}"><b>${NAME[k]}</b><span>${ar(N[k])} صفحة · حلول ${ar(solvedCount(k))} صفحة</span></button>`).join("")}</div></div>
+    ${book?`<div class="sstep"><b>٢. من وين تبدأ؟</b>
+      <div class="chipbar">${starts.map(([v,l])=>`<button type="button" data-s="${v}" aria-pressed="${start===v}">${l}</button>`).join("")}</div></div>
+    <div class="sstep"><b>٣. محلول أو غير محلول؟</b>
+      <div class="chipbar"><button type="button" data-m="1" aria-pressed="${solved}">محلول: الحلول تحت كل صفحة</button><button type="button" data-m="0" aria-pressed="${!solved}">غير محلول: أحل بنفسي</button></div></div>`:""}
+    <button type="button" class="btn" id="go" ${book?"":"disabled"}>${book?"افتح الكتاب":"اختر الكتاب أولًا"}</button>`;
+  s.querySelectorAll(".bpick").forEach(b=>b.onclick=()=>{if(book!==b.dataset.b){book=b.dataset.b;start=null}renderSetup()});
+  s.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{start=b.dataset.s;renderSetup()});
+  s.querySelectorAll(".chipbar [data-m]").forEach(b=>b.onclick=()=>{solved=b.dataset.m==="1";st.set("bm",solved?"1":"0");renderSetup()});
+  $("go").onclick=()=>{if(!book)return;page=Number(start)||1;$("setup").hidden=true;$("viewer").hidden=false;render();scrollTo({top:0})};
+}
+
 function render(){
   page=Math.min(Math.max(1,page),N[book]);
-  document.querySelectorAll("#books button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.b===book));
+  $("wrap").dataset.b=book;
+  $("vtitle").textContent=NAME[book];
   document.querySelectorAll("#modes button").forEach(b=>b.setAttribute("aria-pressed",(b.dataset.m==="1")===solved));
-  $("img").src=`b/${book}/${String(page).padStart(3,"0")}.webp`;$("img").alt=`${NAME[book]} – صفحة ${ar(page)} من ملف الكتاب`;
+  $("img").src=`b/${book}/${String(page).padStart(3,"0")}.webp`;$("img").alt=`${NAME[book]} – صفحة ${ar(page)} من الكتاب`;
   $("num").value=page;$("num").max=N[book];$("of").textContent=`من ${ar(N[book])}`;
   const list=SOL[book][page], keys=Object.keys(SOL[book]).map(Number).sort((a,b)=>a-b);
-  $("jump").innerHTML=`<option value="">صفحات فيها أسئلة (${ar(keys.length)})</option>`+keys.map(k=>`<option value="${k}" ${k===page?"selected":""}>صفحة ${ar(k)}</option>`).join("");
+  $("jump").innerHTML=`<option value="">صفحات فيها حلول (${ar(keys.length)})</option>`+keys.map(k=>`<option value="${k}" ${k===page?"selected":""}>صفحة ${ar(k)}</option>`).join("");
   const s=$("sol");
   if(!solved){s.hidden=true}
-  else{s.hidden=false;s.innerHTML=list?`<h2>حلول هذه الصفحة</h2>`+list.map(([q,a])=>`<div><div class="q">${esc(q)}</div><div class="a">${esc(a)}</div></div>`).join(""):`<p class="none">ما فيه أسئلة في هذه الصفحة. استخدم قائمة «صفحات فيها أسئلة» عشان تنتقل للصفحات اللي فيها حلول.</p>`}
-  st.set("bk",book);st.set("bm",solved?"1":"0");st.set("bp_"+book,page);
+  else{
+    s.hidden=false;
+    const pending=book==="i"&&page>154;
+    s.innerHTML=list?`<h2>حلول هذه الصفحة</h2>`+list.map(([q,a])=>`<div><div class="q">${esc(q)}</div><div class="a">${esc(a)}</div></div>`).join("")
+      :`<p class="none">${pending?"حلول هذا الجزء من الكتاب ما انضافت للحين.":"ما فيه أسئلة في هذه الصفحة."} استخدم قائمة «صفحات فيها حلول» عشان تنتقل للصفحات اللي فيها حلول.</p>`;
+  }
+  st.set("bm",solved?"1":"0");st.set("bp_"+book,page);
 }
-document.querySelectorAll("#books button").forEach(b=>b.onclick=()=>{book=b.dataset.b;page=Number(st.get("bp_"+book))||1;render()});
+$("change").onclick=()=>{start=String(page);renderSetup();scrollTo({top:0})};
 document.querySelectorAll("#modes button").forEach(b=>b.onclick=()=>{solved=b.dataset.m==="1";render()});
 $("prev").onclick=()=>{page--;render();scrollTo({top:0})};
 $("next").onclick=()=>{page++;render();scrollTo({top:0})};
 $("num").onchange=()=>{page=Number($("num").value)||1;render()};
 $("jump").onchange=()=>{if($("jump").value){page=Number($("jump").value);render();scrollTo({top:0})}};
-render();
+renderSetup();
 </script>
 </body>
 </html>
