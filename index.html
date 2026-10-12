@@ -33,7 +33,7 @@ body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px
 img{max-width:100%}
 [hidden]{display:none!important}
 button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
-.wrap{max-width:1100px;margin:0 auto;padding-inline:16px;padding-block:28px 56px;display:flex;flex-direction:column;gap:20px}
+.wrap{max-width:1100px;margin:0 auto;padding-inline:16px;padding-block:28px 56px;display:flex;flex-direction:column;gap:20px;--acc:var(--gold);--acc-soft:var(--gold-soft)}
 .wrap[data-s="t"]{--acc:var(--tajweed);--acc-soft:var(--tajweed-soft)}
 .wrap[data-s="s"]{--acc:var(--social);--acc-soft:var(--social-soft)}
 header{display:flex;flex-direction:column;gap:6px}
@@ -193,6 +193,19 @@ table.cmp.wide{min-width:560px}
 .qhead{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:.9rem;color:var(--muted);font-variant-numeric:tabular-nums}
 
 /* quiz */
+.setup{gap:18px}
+.stitle{font-family:var(--display);font-size:1.25rem;margin:0}
+.sstep{display:flex;flex-direction:column;gap:8px}
+.sstep>b{font-size:.95rem}
+.subjpick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.spick{appearance:none;font:inherit;text-align:right;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:2px;min-width:0}
+.spick b{font-family:var(--display);font-size:1.05rem}
+.spick span{font-size:.82rem;color:var(--muted)}
+.spick[data-q="t"][aria-pressed="true"]{border-color:var(--tajweed);background:var(--tajweed-soft)}
+.spick[data-q="t"][aria-pressed="true"] b{color:var(--tajweed)}
+.spick[data-q="s"][aria-pressed="true"]{border-color:var(--social);background:var(--social-soft)}
+.spick[data-q="s"][aria-pressed="true"] b{color:var(--social)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
 .q{font-family:var(--display);font-size:1.15rem;line-height:1.7;margin:0;text-wrap:balance}
 .opts{display:grid;gap:10px}
 .opt{appearance:none;text-align:right;font:inherit;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;line-height:1.6}
@@ -276,6 +289,7 @@ let done={t:[],s:[]};try{const d=JSON.parse(store.get("done")||"null");if(d&&d.t
 const saveDone=()=>store.set("done",JSON.stringify(done));
 
 let mode="learn", subj="t", openLesson=null, quizLesson=null, cardDeck="all";
+let qs=null, qRun=false; /* مادة الأسئلة: ما تنختار تلقائيًا، والأسئلة ما تبدأ إلا بعد ما يضغط الطالب «ابدأ» */
 const tabs=[...document.querySelectorAll(".tab")], modes=[...document.querySelectorAll(".mode[data-m]")];
 
 function subtitle(k){
@@ -286,19 +300,20 @@ function subtitle(k){
   return `${ar(BANK[k].length)} سؤالًا`;
 }
 function update(){
-  $("wrap").dataset.s=subj;
+  $("wrap").dataset.s=mode==="quiz"?(qs||""):subj;
+  document.querySelector(".tabs").hidden=mode==="quiz";
   modes.forEach(b=>b.setAttribute("aria-selected",b.dataset.m===mode));
   tabs.forEach(t=>t.setAttribute("aria-selected",t.dataset.s===subj));
   for(const k of Object.keys(NAMES)){$("panel-"+k).hidden=!(mode==="sum"&&k===subj);$("sub-"+k).textContent=subtitle(k)}
   $("learn").hidden=mode!=="learn";$("cards").hidden=mode!=="cards";$("quiz").hidden=mode!=="quiz";
   if(mode==="learn")renderLearn();
   if(mode==="cards")cardsStart();
-  if(mode==="quiz")quizStart();
+  if(mode==="quiz"){qRun&&qs?quizStart():renderSetup()}
   store.set("subj",subj);store.set("mode",mode);
 }
 function go(m){mode=m;update();window.scrollTo({top:0})}
 tabs.forEach(t=>t.onclick=()=>{subj=t.dataset.s;openLesson=null;quizLesson=null;cardDeck="all";update();window.scrollTo({top:0})});
-modes.forEach(b=>b.onclick=()=>{if(b.dataset.m!=="quiz")quizLesson=null;if(b.dataset.m==="learn")openLesson=null;if(b.dataset.m!=="cards")cardDeck="all";go(b.dataset.m)});
+modes.forEach(b=>b.onclick=()=>{quizLesson=null;if(b.dataset.m==="quiz"){qs=null;qRun=false}if(b.dataset.m==="learn")openLesson=null;if(b.dataset.m!=="cards")cardDeck="all";go(b.dataset.m)});
 
 /* ===== الملخصات ===== */
 for(const k of Object.keys(NAMES)){
@@ -346,7 +361,7 @@ function renderLesson(i){
   L.ex.forEach(ex=>{const d=document.createElement("div");d.className="ex";exHost.appendChild(d);(ex.type==="order"?exOrder:exSort)(ex,d)});
   learnEl.querySelectorAll(".thumb").forEach(b=>b.onclick=()=>openLb(subj,Number(b.dataset.p)));
   $("lback").onclick=()=>{openLesson=null;renderLearn();window.scrollTo({top:0})};
-  $("lquiz").onclick=()=>{quizLesson=i;go("quiz")};
+  $("lquiz").onclick=()=>{quizLesson=i;qs=subj;qRun=true;go("quiz")};
   $("lcards").onclick=()=>{cardDeck=String(i);go("cards")};
   $("ldone").onclick=()=>{const a=done[subj];const p=a.indexOf(i);p>=0?a.splice(p,1):a.push(i);saveDone();const y=p<0;const b=$("ldone");b.className="btn "+(y?"done":"ghost");b.textContent=y?"✓ خلصت الدرس":"علّم الدرس كمكتمل";$("sub-"+subj).textContent=subtitle(subj)};
   if($("lprev"))$("lprev").onclick=()=>{openLesson=i-1;renderLearn();window.scrollTo({top:0})};
@@ -398,7 +413,7 @@ function renderCard(){
   const title=cardDeck==="nums"?"أرقام لازم تحفظها":cardDeck==="all"?`كل ${NAMES[subj]}`:LESSONS[subj][Number(cardDeck)].title;
   if(!CQ.length){
     cardsEl.innerHTML=`${deckChips()}<div class="bar"><i style="width:100%"></i></div><div class="card"><div class="ref">${title}</div><p class="score">${ar(ctotal)} / ${ar(ctotal)}</p><p style="margin:0">خلصت كل البطاقات! كل اللي ما عرفتها رجعت لك لين حفظتها.</p><div class="actions"><button type="button" class="btn" id="cagain">ابدأ من جديد</button><button type="button" class="btn ghost" id="cquiz">اختبر نفسك</button></div></div>`;
-    bindDeck();$("cagain").onclick=cardsStart;$("cquiz").onclick=()=>{quizLesson=/^\d+$/.test(cardDeck)?Number(cardDeck):null;go("quiz")};return;
+    bindDeck();$("cagain").onclick=cardsStart;$("cquiz").onclick=()=>{quizLesson=/^\d+$/.test(cardDeck)?Number(cardDeck):null;qs=subj;qRun=true;go("quiz")};return;
   }
   const c=CQ[0];
   cardsEl.innerHTML=`${deckChips()}
@@ -421,23 +436,36 @@ function bindDeck(){cardsEl.querySelectorAll(".chipbar button").forEach(b=>b.onc
 /* ===== الأسئلة ===== */
 const quizEl=$("quiz");
 let Q=[],qi=0,score=0,wrong=[],qlen=Number(store.get("qlen"))||10;
+const qCount=()=>{const b=bankOf(qs,quizLesson).length;return qlen===0?b:Math.min(qlen,b)};
+const qWord=n=>`${ar(n)} ${n>2&&n<11?"أسئلة":"سؤالًا"}`;
+/* شاشة الاختيار: المادة ← الدرس ← عدد الأسئلة ← ابدأ */
+function renderSetup(){
+  qRun=false;$("wrap").dataset.s=qs||"";
+  const lens=[[10,"١٠"],[20,"٢٠"],[0,"الكل"]];
+  const cur=quizLesson==null?"all":String(quizLesson);
+  quizEl.innerHTML=`<div class="card setup">
+    <div><h2 class="stitle">اختبر نفسك</h2><p class="ref" style="margin:0">اختر المادة، وبعدها اضغط «ابدأ الاختبار».</p></div>
+    <div class="sstep"><b>١. اختر المادة</b>
+      <div class="subjpick">${Object.keys(NAMES).map(k=>`<button type="button" class="spick" data-q="${k}" aria-pressed="${qs===k}"><b>${NAMES[k]}</b><span>${qWord(BANK[k].length)}</span></button>`).join("")}</div></div>
+    ${qs?`<div class="sstep"><b>٢. اختر الدرس</b>
+      <div class="chipbar">${[["all","كل المادة"],...LESSONS[qs].map((L,i)=>[String(i),`${ar(i+1)} · ${L.title}`])].map(([v,l])=>`<button type="button" data-l="${v}" aria-pressed="${cur===v}">${l}</button>`).join("")}</div></div>
+    <div class="sstep"><b>٣. عدد الأسئلة</b>
+      <div class="chipbar">${lens.map(([v,l])=>`<button type="button" data-n="${v}" aria-pressed="${qlen===v}">${l}</button>`).join("")}</div></div>`:""}
+    <div class="actions"><button type="button" class="btn" id="qgo" ${qs?"":"disabled"}>${qs?`ابدأ الاختبار (${qWord(qCount())})`:"اختر المادة أولًا"}</button></div>
+  </div>`;
+  quizEl.querySelectorAll(".spick").forEach(b=>b.onclick=()=>{if(qs!==b.dataset.q){qs=b.dataset.q;quizLesson=null}renderSetup()});
+  quizEl.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>{quizLesson=b.dataset.l==="all"?null:Number(b.dataset.l);renderSetup()});
+  quizEl.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>{qlen=Number(b.dataset.n);store.set("qlen",qlen);renderSetup()});
+  $("qgo").onclick=()=>{if(qs){quizStart();window.scrollTo({top:0})}};
+}
 function quizStart(){
-  const bank=bankOf(subj,quizLesson);const n=qlen===0?bank.length:Math.min(qlen,bank.length);
-  Q=shuffle(bank).slice(0,n).map(r=>({q:r[0],a:r[1],opts:shuffle(r.slice(1,5)),ref:r[5]}));
+  qRun=true;$("wrap").dataset.s=qs;
+  Q=shuffle(bankOf(qs,quizLesson)).slice(0,qCount()).map(r=>({q:r[0],a:r[1],opts:shuffle(r.slice(1,5)),ref:r[5]}));
   qi=0;score=0;wrong=[];renderQ();
 }
-function quizTop(){
-  const scope=[["all","كل المادة"],...LESSONS[subj].map((L,i)=>[String(i),`الدرس ${ar(i+1)}`])];
-  const cur=quizLesson==null?"all":String(quizLesson);
-  const lens=[[10,"١٠"],[20,"٢٠"],[0,"الكل"]];
-  return `<div class="chipbar">${scope.map(([v,l])=>`<button type="button" data-l="${v}" aria-pressed="${cur===v}">${l}</button>`).join("")}</div>
-  <div class="chipbar">عدد الأسئلة: ${lens.map(([v,l])=>`<button type="button" data-n="${v}" aria-pressed="${qlen===v}">${l}</button>`).join("")}</div>`;
-}
-function bindTop(){
-  quizEl.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>{qlen=Number(b.dataset.n);store.set("qlen",qlen);quizStart()});
-  quizEl.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>{quizLesson=b.dataset.l==="all"?null:Number(b.dataset.l);quizStart()});
-}
-const scopeName=()=>quizLesson==null?NAMES[subj]:`${NAMES[subj]} · ${LESSONS[subj][quizLesson].title}`;
+function quizTop(){return `<button type="button" class="back" id="qchange">→ غيّر المادة أو الدرس</button>`}
+function bindTop(){$("qchange").onclick=()=>{renderSetup();window.scrollTo({top:0})}}
+const scopeName=()=>quizLesson==null?NAMES[qs]:`${NAMES[qs]} · ${LESSONS[qs][quizLesson].title}`;
 function renderQ(){
   const it=Q[qi];
   quizEl.innerHTML=`${quizTop()}
@@ -478,7 +506,7 @@ function renderResult(){
   bindTop();
   $("again").onclick=quizStart;
   if($("retry"))$("retry").onclick=()=>{Q=shuffle(wrong).map(w=>({...w,opts:shuffle(w.opts)}));qi=0;score=0;wrong=[];renderQ()};
-  if($("tolesson"))$("tolesson").onclick=()=>{openLesson=quizLesson;go("learn")};
+  if($("tolesson"))$("tolesson").onclick=()=>{subj=qs;openLesson=quizLesson;go("learn")};
   window.scrollTo({top:0});
 }
 
