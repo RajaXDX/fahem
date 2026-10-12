@@ -22,6 +22,10 @@ h1{font-family:var(--display);font-size:clamp(1.4rem,4vw,2rem);margin:0}
 .nav{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .nav button,.nav select{font:inherit;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:6px 12px;cursor:pointer}
 .nav input{width:5.5em;font:inherit;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:6px 10px}
+.modes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:999px;max-width:680px;width:100%}
+.mode{color:var(--muted);font-weight:600;font-size:.95rem;padding:8px 4px;border-radius:999px;white-space:nowrap;text-align:center;text-decoration:none}
+.mode[aria-current="page"]{background:var(--fg);color:var(--bg)}
+@media (max-width:440px){.mode{font-size:.82rem;padding:8px 2px}}
 .pg{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .pg img{display:block;width:100%;height:auto}
 .sol{background:var(--surface);border:1.5px solid var(--ok);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:12px}
@@ -35,7 +39,14 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 </head>
 <body>
 <div class="wrap">
-  <div class="row" style="justify-content:space-between"><h1>الكتب المحلولة</h1><a href="./">← الملخصات والأسئلة</a></div>
+  <nav class="modes" aria-label="القسم">
+    <a class="mode" href="./#learn">الدروس</a>
+    <a class="mode" href="./#summaries">الملخصات</a>
+    <a class="mode" href="./#cards">البطاقات</a>
+    <a class="mode" href="./#quiz">الأسئلة</a>
+    <a class="mode" href="books.html" aria-current="page">الكتب</a>
+  </nav>
+  <h1>الكتب المحلولة</h1>
   <p class="hint">الصف الأول المتوسط · الفصل الدراسي الأول. اختر الكتاب، واختر «محلول» عشان تطلع الحلول تحت كل صفحة، أو «غير محلول» عشان تحل بنفسك.</p>
   <div class="bar">
     <div class="row">

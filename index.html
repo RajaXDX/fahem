@@ -41,8 +41,9 @@ header{display:flex;flex-direction:column;gap:6px}
 h1{font-family:var(--display);font-size:clamp(1.6rem,4.5vw,2.4rem);line-height:1.35;margin:0;text-wrap:balance}
 .lead{margin:0;color:var(--muted);max-width:60ch}
 
-.modes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:999px;max-width:560px;width:100%}
-.mode{appearance:none;border:0;background:transparent;color:var(--muted);font:inherit;font-weight:600;font-size:.95rem;padding:8px 4px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.modes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:999px;max-width:680px;width:100%}
+.mode{appearance:none;border:0;background:transparent;color:var(--muted);font:inherit;font-weight:600;font-size:.95rem;padding:8px 4px;border-radius:999px;cursor:pointer;white-space:nowrap;text-align:center;text-decoration:none}
+@media (max-width:440px){.mode{font-size:.82rem;padding:8px 2px}}
 .mode[aria-selected="true"]{background:var(--fg);color:var(--bg)}
 
 .tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px}
@@ -224,7 +225,7 @@ table.cmp.wide{min-width:560px}
   <header>
     <div class="eyebrow">الصف الأول المتوسط · الفصل الدراسي الأول</div>
     <h1>ملخصات التجويد والاجتماعيات</h1>
-    <p class="lead">ادرس كل درس مشروح خطوة بخطوة، وحل التمارين، واحفظ بالبطاقات، ثم اختبر نفسك. <a href="books.html">الكتب المحلولة (الاجتماعيات والإسلامية)</a></p>
+    <p class="lead">ادرس كل درس مشروح خطوة بخطوة، وحل التمارين، واحفظ بالبطاقات، ثم اختبر نفسك.</p>
   </header>
 
   <div class="modes" role="tablist" aria-label="القسم">
@@ -232,6 +233,7 @@ table.cmp.wide{min-width:560px}
     <button class="mode" role="tab" data-m="sum" aria-selected="false">الملخصات</button>
     <button class="mode" role="tab" data-m="cards" aria-selected="false">البطاقات</button>
     <button class="mode" role="tab" data-m="quiz" aria-selected="false">الأسئلة</button>
+    <a class="mode" href="books.html">الكتب</a>
   </div>
 
   <div class="tabs" role="tablist" aria-label="المادة">
@@ -274,7 +276,7 @@ let done={t:[],s:[]};try{const d=JSON.parse(store.get("done")||"null");if(d&&d.t
 const saveDone=()=>store.set("done",JSON.stringify(done));
 
 let mode="learn", subj="t", openLesson=null, quizLesson=null, cardDeck="all";
-const tabs=[...document.querySelectorAll(".tab")], modes=[...document.querySelectorAll(".mode")];
+const tabs=[...document.querySelectorAll(".tab")], modes=[...document.querySelectorAll(".mode[data-m]")];
 
 function subtitle(k){
   const L=LESSONS[k].length;
