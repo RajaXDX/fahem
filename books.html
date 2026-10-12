@@ -3,29 +3,26 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>الكتب المحلولة · أول متوسط</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap">
+<title>الكتب المحلولة · فاهم</title>
+<meta name="theme-color" content="#fbf6e8">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="theme.css">
+<script src="theme.js"></script>
 <style>
-:root{--bg:#f5f4ef;--surface:#fff;--fg:#1d2422;--muted:#5f6a66;--line:#dcdcd2;--acc:#1f3a6b;--acc-soft:#e5ebf6;--ok:#1f7a4d;--ok-soft:#e3f3ea;--gold:#9a7020;
---display:"Noto Kufi Arabic","Segoe UI",Tahoma,sans-serif;--body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif;color-scheme:light}
-@media (prefers-color-scheme:dark){:root{--bg:#121615;--surface:#1b2120;--fg:#e8ece9;--muted:#9aa5a1;--line:#2c3533;--acc:#8fb0ec;--acc-soft:#1b2436;--ok:#5fcf95;--ok-soft:#173026;--gold:#d9ae55;color-scheme:dark}}
 *{box-sizing:border-box}html,body{margin:0}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.75}
-.wrap{max-width:900px;margin:0 auto;padding-inline:16px;padding-block:20px 60px;display:flex;flex-direction:column;gap:14px}
+.wrap{--acc:var(--social);--acc-soft:var(--social-soft);max-width:900px;margin:0 auto;padding-inline:16px;padding-block:20px 60px;display:flex;flex-direction:column;gap:14px}
 a{color:var(--acc)}
 h1{font-family:var(--display);font-size:clamp(1.4rem,4vw,2rem);margin:0}
 .bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px;display:flex;flex-direction:column;gap:8px}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .seg{display:inline-flex;gap:4px;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:999px}
 .seg button{appearance:none;border:0;background:none;color:var(--muted);font:inherit;font-weight:600;padding:6px 16px;border-radius:999px;cursor:pointer}
-.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.seg button[aria-pressed="true"]{background:var(--acc);color:var(--surface)}
 .nav{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .nav button,.nav select{font:inherit;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:6px 12px;cursor:pointer}
 .nav input{width:5.5em;font:inherit;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:6px 10px}
-.modes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:999px;max-width:680px;width:100%}
-.mode{color:var(--muted);font-weight:600;font-size:.95rem;padding:8px 4px;border-radius:999px;white-space:nowrap;text-align:center;text-decoration:none}
-.mode[aria-current="page"]{background:var(--fg);color:var(--bg)}
-@media (max-width:440px){.mode{font-size:.82rem;padding:8px 2px}}
 .pg{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .pg img{display:block;width:100%;height:auto}
 .sol{background:var(--surface);border:1.5px solid var(--ok);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:12px}
@@ -39,6 +36,10 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 </head>
 <body>
 <div class="wrap">
+  <header class="top">
+    <a class="logo" href="./" aria-label="فاهم · الصفحة الرئيسية"><span class="logo-mark" aria-hidden="true">ف</span><span class="logo-word">فاهم<small>ملخصات أول متوسط</small></span></a>
+    <button type="button" class="themebtn" id="themebtn" aria-label="الوضع الداكن"></button>
+  </header>
   <nav class="modes" aria-label="القسم">
     <a class="mode" href="./#learn">الدروس</a>
     <a class="mode" href="./#summaries">الملخصات</a>

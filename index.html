@@ -3,29 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ملخصات أول متوسط</title>
-<meta name="description" content="دروس مشروحة وتمارين وبطاقات حفظ وأسئلة في التجويد والاجتماعيات للصف الأول المتوسط.">
+<title>فاهم · ملخصات أول متوسط</title>
+<meta name="description" content="فاهم: دروس مشروحة وتمارين وبطاقات حفظ وأسئلة في التجويد والاجتماعيات للصف الأول المتوسط.">
+<meta name="theme-color" content="#fbf6e8">
+<meta property="og:title" content="فاهم · ذاكر، وصِر فاهم">
+<meta property="og:description" content="ملخصات ودروس وأسئلة للصف الأول المتوسط.">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Kufi+Arabic:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="theme.css">
+<script src="theme.js"></script>
 <style>
-/* Layout: a study binder — header, a four-way switch (lessons / summaries / cards / questions), subject tabs, then the active view */
-:root{
-  --bg:#f5f4ef; --surface:#ffffff; --fg:#1d2422; --muted:#5f6a66; --line:#dcdcd2;
-  --tajweed:#14463a; --tajweed-soft:#e6efe9; --social:#1f3a6b; --social-soft:#e5ebf6;
-  --gold:#9a7020; --gold-soft:#f6eedb;
-  --ok:#1f7a4d; --ok-soft:#e3f3ea; --bad:#b23a2a; --bad-soft:#f8e5e1;
-  --hot:#f3c9a5; --mild:#f6e7b5; --cold:#d6e6f3; --water:#3d7bd1; --land:#c9a46a;
-  --display:"Noto Kufi Arabic", "Segoe UI", Tahoma, sans-serif;
-  --body:"IBM Plex Sans Arabic", "Segoe UI", Tahoma, sans-serif;
-  --quran:"Amiri", "Traditional Arabic", serif;
-  color-scheme:light;
-}
-@media (prefers-color-scheme: dark){:root{
-  --bg:#121615; --surface:#1b2120; --fg:#e8ece9; --muted:#9aa5a1; --line:#2c3533;
-  --tajweed:#6fc2a5; --tajweed-soft:#1b2c27; --social:#8fb0ec; --social-soft:#1b2436;
-  --gold:#d9ae55; --gold-soft:#2b2618;
-  --ok:#5fcf95; --ok-soft:#173026; --bad:#ef8a7a; --bad-soft:#3a1f1b;
-  --hot:#5a3a22; --mild:#4a4224; --cold:#22384a; --water:#4f8fe0; --land:#a8864f; color-scheme:dark}}
+/* Layout: a study binder — brand bar, hero, a five-way switch (lessons / summaries / cards / questions / books), subject tabs, then the active view. Colors live in theme.css */
 
 *{box-sizing:border-box}
 html,body{margin:0}
@@ -36,15 +25,10 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .wrap{max-width:1100px;margin:0 auto;padding-inline:16px;padding-block:28px 56px;display:flex;flex-direction:column;gap:20px;--acc:var(--gold);--acc-soft:var(--gold-soft)}
 .wrap[data-s="t"]{--acc:var(--tajweed);--acc-soft:var(--tajweed-soft)}
 .wrap[data-s="s"]{--acc:var(--social);--acc-soft:var(--social-soft)}
-header{display:flex;flex-direction:column;gap:6px}
+.hero{display:flex;flex-direction:column;gap:6px;padding-top:6px}
 .eyebrow{font-size:.82rem;color:var(--gold);font-weight:600;letter-spacing:.02em}
-h1{font-family:var(--display);font-size:clamp(1.6rem,4.5vw,2.4rem);line-height:1.35;margin:0;text-wrap:balance}
+h1{font-family:var(--display);font-size:clamp(1.7rem,5vw,2.6rem);line-height:1.45;margin:0;text-wrap:balance}
 .lead{margin:0;color:var(--muted);max-width:60ch}
-
-.modes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:999px;max-width:680px;width:100%}
-.mode{appearance:none;border:0;background:transparent;color:var(--muted);font:inherit;font-weight:600;font-size:.95rem;padding:8px 4px;border-radius:999px;cursor:pointer;white-space:nowrap;text-align:center;text-decoration:none}
-@media (max-width:440px){.mode{font-size:.82rem;padding:8px 2px}}
-.mode[aria-selected="true"]{background:var(--fg);color:var(--bg)}
 
 .tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px}
 .tab{appearance:none;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:12px;padding:12px 14px;font:inherit;text-align:right;cursor:pointer;display:flex;flex-direction:column;gap:2px;min-width:0}
@@ -235,11 +219,16 @@ table.cmp.wide{min-width:560px}
 </head>
 <body>
 <div class="wrap" id="wrap" data-s="t">
-  <header>
-    <div class="eyebrow">الصف الأول المتوسط · الفصل الدراسي الأول</div>
-    <h1>ملخصات التجويد والاجتماعيات</h1>
-    <p class="lead">ادرس كل درس مشروح خطوة بخطوة، وحل التمارين، واحفظ بالبطاقات، ثم اختبر نفسك.</p>
+  <header class="top">
+    <a class="logo" href="./" aria-label="فاهم · الصفحة الرئيسية"><span class="logo-mark" aria-hidden="true">ف</span><span class="logo-word">فاهم<small>ملخصات أول متوسط</small></span></a>
+    <button type="button" class="themebtn" id="themebtn" aria-label="الوضع الداكن"></button>
   </header>
+
+  <section class="hero">
+    <div class="eyebrow">الصف الأول المتوسط · الفصل الدراسي الأول</div>
+    <h1>ذاكر، وصِر <mark class="hl">فاهم</mark></h1>
+    <p class="lead">التجويد والاجتماعيات: ادرس كل درس مشروح خطوة بخطوة، وحل التمارين، واحفظ بالبطاقات، ثم اختبر نفسك.</p>
+  </section>
 
   <div class="modes" role="tablist" aria-label="القسم">
     <button class="mode" role="tab" data-m="learn" aria-selected="true">الدروس</button>
@@ -259,6 +248,8 @@ table.cmp.wide{min-width:560px}
   <section class="panel" id="panel-s" hidden></section>
   <section class="cards" id="cards" hidden></section>
   <section class="quiz" id="quiz" hidden></section>
+
+  <footer class="foot"><span class="logo-mark" aria-hidden="true">ف</span><span>فاهم · ذاكر، وصِر فاهم</span></footer>
 </div>
 
 <div class="lb" id="lb" hidden>
