@@ -35,7 +35,11 @@
 .themebtn{appearance:none;width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);display:grid;place-items:center;cursor:pointer;padding:0;flex:none}
 .themebtn:hover{border-color:var(--gold)}
 .themebtn svg{width:20px;height:20px}
-.logo:focus-visible,.themebtn:focus-visible,.mode:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.top-end{display:flex;align-items:center;gap:8px}
+.homelink{display:inline-flex;align-items:center;gap:6px;height:40px;padding-inline:14px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);text-decoration:none;font-weight:600;font-size:.9rem;white-space:nowrap}
+.homelink:hover{border-color:var(--gold)}
+.homelink svg{width:18px;height:18px}
+.logo:focus-visible,.themebtn:focus-visible,.mode:focus-visible,.homelink:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 
 /* قلم التظليل: علامة الهوية */
 mark.hl{background:linear-gradient(to top,var(--hl) 0 40%,transparent 40%);color:inherit;padding-inline:.12em;border-radius:2px}
