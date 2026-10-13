@@ -291,7 +291,7 @@ const tabs=[...document.querySelectorAll(".tab")], modes=[...document.querySelec
 
 function subtitle(k){
   const L=LESSONS[k].length;
-  if(mode==="learn")return `${ar(L)} ${L>2&&L<11?"دروس":"درس"} · خلصت ${ar(done[k].length)}`;
+  if(mode==="learn")return `${ar(L)} ${L>2&&L<11?"دروس":L>10?"درسًا":"درس"} · خلصت ${ar(done[k].length)}`;
   if(mode==="sum")return k==="t"?"من ص ٩ إلى ص ٢٦ · ١٠ صفحات":k==="s"?"من ص ١٢ إلى ص ٦١ · ١٦ صفحة":"الكتاب المحلول";
   if(mode==="cards")return `${ar(BANK[k].length+(k==="s"?NUMS.length:0))} بطاقة`;
   return `${ar(BANK[k].length)} سؤالًا`;
