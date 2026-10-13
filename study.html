@@ -185,6 +185,9 @@ table.cmp.wide{min-width:560px}
 .spick[data-q="t"][aria-pressed="true"] b{color:var(--tajweed)}
 .spick[data-q="s"][aria-pressed="true"]{border-color:var(--social);background:var(--social-soft)}
 .spick[data-q="s"][aria-pressed="true"] b{color:var(--social)}
+.spick[data-q="i"][aria-pressed="true"]{border-color:var(--gold);background:var(--gold-soft)}
+.spick[data-q="i"][aria-pressed="true"] b{color:var(--gold)}
+.subjpick .spick[data-q="i"]{grid-column:1/-1}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .q{font-family:var(--display);font-size:1.15rem;line-height:1.7;margin:0;text-wrap:balance}
 .opts{display:grid;gap:10px}
@@ -257,8 +260,12 @@ table.cmp.wide{min-width:560px}
 
 <script src="bank.js"></script>
 <script src="lessons.js"></script>
+<script src="bank_i.js"></script>
 <script>
 const NAMES={t:"التجويد",s:"الاجتماعيات"};
+/* مواد قسم الأسئلة: الإسلامية لها أسئلة فقط (بدون دروس وملخصات)، وتنقسم حسب أقسام الكتاب */
+const QNAMES={...NAMES,i:"الدراسات الإسلامية"};
+const qParts=k=>k==="i"?IPARTS.map(p=>p.title):LESSONS[k].map(L=>L.title);
 const COUNT={t:10,s:16};
 const ar=n=>n.toLocaleString("ar-SA");
 const pad=n=>String(n).padStart(2,"0");
@@ -427,9 +434,9 @@ function renderSetup(){
   quizEl.innerHTML=`<div class="card setup">
     <div><h2 class="stitle">اختبر نفسك</h2><p class="ref" style="margin:0">اختر المادة، وبعدها اضغط «ابدأ الاختبار».</p></div>
     <div class="sstep"><b>١. اختر المادة</b>
-      <div class="subjpick">${Object.keys(NAMES).map(k=>`<button type="button" class="spick" data-q="${k}" aria-pressed="${qs===k}"><b>${NAMES[k]}</b><span>${qWord(BANK[k].length)}</span></button>`).join("")}</div></div>
-    ${qs?`<div class="sstep"><b>٢. اختر الدرس</b>
-      <div class="chipbar">${[["all","كل المادة"],...LESSONS[qs].map((L,i)=>[String(i),`${ar(i+1)} · ${L.title}`])].map(([v,l])=>`<button type="button" data-l="${v}" aria-pressed="${cur===v}">${l}</button>`).join("")}</div></div>
+      <div class="subjpick">${Object.keys(QNAMES).map(k=>`<button type="button" class="spick" data-q="${k}" aria-pressed="${qs===k}"><b>${QNAMES[k]}</b><span>${qWord(BANK[k].length)}</span></button>`).join("")}</div></div>
+    ${qs?`<div class="sstep"><b>٢. ${qs==="i"?"اختر القسم":"اختر الدرس"}</b>
+      <div class="chipbar">${[["all","كل المادة"],...qParts(qs).map((t,i)=>[String(i),qs==="i"?t:`${ar(i+1)} · ${t}`])].map(([v,l])=>`<button type="button" data-l="${v}" aria-pressed="${cur===v}">${l}</button>`).join("")}</div></div>
     <div class="sstep"><b>٣. عدد الأسئلة</b>
       <div class="chipbar">${lens.map(([v,l])=>`<button type="button" data-n="${v}" aria-pressed="${qlen===v}">${l}</button>`).join("")}</div></div>`:""}
     <div class="actions"><button type="button" class="btn" id="qgo" ${qs?"":"disabled"}>${qs?`ابدأ الاختبار (${qWord(qCount())})`:"اختر المادة أولًا"}</button></div>
@@ -446,7 +453,8 @@ function quizStart(){
 }
 function quizTop(){return `<button type="button" class="back" id="qchange">→ غيّر المادة أو الدرس</button>`}
 function bindTop(){$("qchange").onclick=()=>{renderSetup();window.scrollTo({top:0})}}
-const scopeName=()=>quizLesson==null?NAMES[qs]:`${NAMES[qs]} · ${LESSONS[qs][quizLesson].title}`;
+const scopeName=()=>quizLesson==null?QNAMES[qs]:`${QNAMES[qs]} · ${qParts(qs)[quizLesson]}`;
+const refWhere=()=>qs==="i"?"الكتاب":"الملخص";
 function renderQ(){
   const it=Q[qi];
   quizEl.innerHTML=`${quizTop()}
@@ -465,7 +473,7 @@ function renderQ(){
     btns.forEach(x=>{x.disabled=true;if(it.opts[x.dataset.i]===it.a)x.classList.add("ok")});
     if(right)score++;else{b.classList.add("bad");wrong.push(it)}
     const fb=quizEl.querySelector(".fb");fb.hidden=false;
-    fb.innerHTML=right?`<b class="ok">إجابة صحيحة ✓</b> <span class="ref">· راجعها في الملخص ${it.ref}</span>`:`<b class="bad">إجابة خاطئة ✗</b> الصحيح: <b>${it.a}</b> <span class="ref">· راجعها في الملخص ${it.ref}</span>`;
+    fb.innerHTML=right?`<b class="ok">إجابة صحيحة ✓</b> <span class="ref">· راجعها في ${refWhere()} ${it.ref}</span>`:`<b class="bad">إجابة خاطئة ✗</b> الصحيح: <b>${it.a}</b> <span class="ref">· راجعها في ${refWhere()} ${it.ref}</span>`;
     quizEl.querySelector(".qhead span:last-child").textContent=`الصحيحة: ${ar(score)}`;
     quizEl.querySelector(".actions").hidden=false;
     const nx=$("next");nx.focus({preventScroll:true});
@@ -481,7 +489,7 @@ function renderResult(){
     <div class="ref">النتيجة · ${scopeName()}</div>
     <p class="score">${ar(score)} / ${ar(Q.length)}</p>
     <p style="margin:0">${msg}</p>
-    <div class="actions"><button type="button" class="btn" id="again">أسئلة جديدة</button>${wrong.length?`<button type="button" class="btn ghost" id="retry">أعد الأسئلة الخاطئة (${ar(wrong.length)})</button>`:""}${quizLesson!=null?`<button type="button" class="btn ghost" id="tolesson">ارجع للدرس</button>`:""}</div>
+    <div class="actions"><button type="button" class="btn" id="again">أسئلة جديدة</button>${wrong.length?`<button type="button" class="btn ghost" id="retry">أعد الأسئلة الخاطئة (${ar(wrong.length)})</button>`:""}${quizLesson!=null&&qs!=="i"?`<button type="button" class="btn ghost" id="tolesson">ارجع للدرس</button>`:""}</div>
   </div>
   ${wrong.length?`<div class="card"><b>الأسئلة اللي أخطأت فيها</b><ul class="review">${wrong.map(w=>`<li>${w.q}<span>${w.a}</span><em class="ref">${w.ref}</em></li>`).join("")}</ul></div>`:""}`;
   bindTop();
@@ -498,7 +506,7 @@ if(NAMES[sv])subj=sv; if(["learn","sum","cards","quiz"].includes(sm))mode=sm;
 const HM={learn:"learn",lessons:"learn",sum:"sum",summary:"sum",summaries:"sum",cards:"cards",quiz:"quiz",questions:"quiz"};
 if(HM[h])mode=HM[h];
 if(h==="social"||h==="s"||hs==="s")subj="s"; if(h==="tajweed"||h==="t"||hs==="t")subj="t";
-if(HM[h]==="quiz"&&NAMES[hs])qs=hs;
+if(HM[h]==="quiz"&&QNAMES[hs])qs=hs;
 update();
 
 /* ===== عارض الصفحات ===== */
