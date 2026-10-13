@@ -97,7 +97,9 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 <script src="sol/e1.js"></script><script src="sol/e2.js"></script><script src="sol/e3.js"></script>
 <script src="sol/e4a.js"></script><script src="sol/e4b.js"></script><script src="sol/e5.js"></script>
 <script src="sol/e6.js"></script><script src="sol/e7.js"></script><script src="sol/e8.js"></script>
-<script src="sol/i1.js"></script><script src="sol/i2.js"></script><script src="sol/i3.js"></script>
+<script src="sol/i1.js"></script><script src="sol/i2.js"></script><script src="sol/i3.js"></script><script src="sol/i4.js"></script>
+<script src="sol/i5.js"></script><script src="sol/i6.js"></script><script src="sol/i7.js"></script>
+<script src="sol/i8.js"></script><script src="sol/i9.js"></script><script src="sol/i10.js"></script>
 <script>
 const N={e:258,i:246},NAME={e:"الاجتماعيات",i:"الدراسات الإسلامية"};
 /* بداية كل وحدة أو قسم (رقم الصفحة في الكتاب) */
@@ -151,9 +153,8 @@ function render(){
   if(!solved){s.hidden=true}
   else{
     s.hidden=false;
-    const pending=book==="i"&&page>154;
     s.innerHTML=list?`<h2>حلول هذه الصفحة</h2>`+list.map(([q,a])=>`<div><div class="q">${esc(q)}</div><div class="a">${esc(a)}</div></div>`).join("")
-      :`<p class="none">${pending?"حلول هذا الجزء من الكتاب ما انضافت للحين.":"ما فيه أسئلة في هذه الصفحة."} استخدم قائمة «صفحات فيها حلول» عشان تنتقل للصفحات اللي فيها حلول.</p>`;
+      :`<p class="none">ما فيه أسئلة في هذه الصفحة. استخدم قائمة «صفحات فيها حلول» عشان تنتقل للصفحات اللي فيها حلول.</p>`;
   }
   st.set("bm",solved?"1":"0");st.set("bp_"+book,page);
 }
