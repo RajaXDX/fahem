@@ -6,7 +6,7 @@
 <title>الكتب المحلولة · فاهم</title>
 <meta name="theme-color" content="#fbf6e8">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@700&family=Noto+Kufi+Arabic:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="theme.css">
 <script src="theme.js"></script>
 <style>
@@ -51,13 +51,17 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 .nav{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .nav button,.nav select{font:inherit;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:6px 12px;cursor:pointer;max-width:100%}
 .nav input{width:5.5em;font:inherit;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:6px 10px}
-.pg{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.hint{color:var(--muted);font-size:.85rem;margin:0}
+/* الصفحة والحلول المكتوبة عليها: المواقع بالنسبة المئوية من الصورة، والخط بـ cqw عشان يكبر ويصغر مع الصفحة */
+.pg{position:relative;container-type:inline-size;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .pg img{display:block;width:100%;height:auto}
-.sol{background:var(--surface);border:1.5px solid var(--ok);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:12px}
-.sol h2{font-family:var(--display);font-size:1rem;margin:0;color:var(--ok)}
-.q{font-weight:600}
-.a{white-space:pre-line;background:var(--ok-soft);border-radius:10px;padding:8px 12px;margin-top:4px}
-.none{color:var(--muted);font-size:.92rem;margin:0}
+.ans{position:absolute;display:flex;flex-direction:column;justify-content:flex-start;margin:0;padding:0 .4cqw;font-family:"Noto Naskh Arabic","Noto Kufi Arabic",serif;font-weight:700;color:#1739a6;text-align:right;white-space:pre-line;text-shadow:0 0 .25cqw #fff,0 0 .25cqw #fff;cursor:pointer;border-radius:.6cqw;overflow:hidden;appearance:none;border:0;background:none}
+.ans.one{justify-content:center}
+.ans.mid{text-align:center}
+.ans:hover,.ans[aria-expanded="true"]{background:rgb(246 200 68 / .28)}
+.pop{position:absolute;inset-inline:3%;z-index:3;background:var(--surface);color:var(--fg);border:1.5px solid var(--acc);border-radius:12px;padding:10px 14px;box-shadow:0 10px 24px -8px rgb(0 0 0 / .35);font-size:1rem;line-height:1.7}
+.pop small{display:block;color:var(--muted);font-size:.8rem}
+.pop b{display:block;white-space:pre-line;color:var(--acc)}
 </style>
 </head>
 <body>
@@ -88,9 +92,9 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
         <button id="next">التالية ←</button>
         <select id="jump" aria-label="انتقل إلى صفحة فيها حلول"></select>
       </div>
+      <p class="hint" id="hint" aria-live="polite"></p>
     </div>
-    <div class="pg"><img id="img" alt="" width="1211" height="1454"></div>
-    <section class="sol" id="sol"></section>
+    <div class="pg" id="pg"><img id="img" alt="" width="1211" height="1454"></div>
   </section>
 </div>
 <script>const SOL={e:{},i:{}};</script>
@@ -130,7 +134,7 @@ function renderSetup(){
     ${book?`<div class="sstep"><b>٢. من وين تبدأ؟</b>
       <div class="chipbar">${starts.map(([v,l])=>`<button type="button" data-s="${v}" aria-pressed="${start===v}">${l}</button>`).join("")}</div></div>
     <div class="sstep"><b>٣. محلول أو غير محلول؟</b>
-      <div class="chipbar"><button type="button" data-m="1" aria-pressed="${solved}">محلول: الحلول تحت كل صفحة</button><button type="button" data-m="0" aria-pressed="${!solved}">غير محلول: أحل بنفسي</button></div></div>`:""}
+      <div class="chipbar"><button type="button" data-m="1" aria-pressed="${solved}">محلول: الحلول مكتوبة على الصفحة</button><button type="button" data-m="0" aria-pressed="${!solved}">غير محلول: أحل بنفسي</button></div></div>`:""}
     <button type="button" class="btn" id="go" ${book?"":"disabled"}>${book?"افتح الكتاب":"اختر الكتاب أولًا"}</button>`;
   s.querySelectorAll(".bpick").forEach(b=>b.onclick=()=>{if(book!==b.dataset.b){book=b.dataset.b;start=null}renderSetup()});
   s.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{start=b.dataset.s;renderSetup()});
@@ -147,16 +151,60 @@ function render(){
   $("num").value=page;$("num").max=N[book];$("of").textContent=`من ${ar(N[book])}`;
   const list=SOL[book][page], keys=Object.keys(SOL[book]).map(Number).sort((a,b)=>a-b);
   $("jump").innerHTML=`<option value="">صفحات فيها حلول (${ar(keys.length)})</option>`+keys.map(k=>`<option value="${k}" ${k===page?"selected":""}>صفحة ${ar(k)}</option>`).join("");
-  const s=$("sol");
-  if(!solved){s.hidden=true}
-  else{
-    s.hidden=false;
-    const pending=book==="i"&&page>154;
-    s.innerHTML=list?`<h2>حلول هذه الصفحة</h2>`+list.map(([q,a])=>`<div><div class="q">${esc(q)}</div><div class="a">${esc(a)}</div></div>`).join("")
-      :`<p class="none">${pending?"حلول هذا الجزء من الكتاب ما انضافت للحين.":"ما فيه أسئلة في هذه الصفحة."} استخدم قائمة «صفحات فيها حلول» عشان تنتقل للصفحات اللي فيها حلول.</p>`;
-  }
+  const pending=book==="i"&&page>154;
+  $("hint").textContent=!list?(pending?"حلول هذا الجزء من الكتاب ما انضافت للحين.":"ما فيه أسئلة في هذه الصفحة. استخدم قائمة «صفحات فيها حلول» للتنقل.")
+    :solved?"الحلول مكتوبة بالأزرق على الصفحة. اضغط على أي حل عشان تكبّره.":"الحلول مخفية. اختر «محلول» عشان تطلع على الصفحة.";
+  drawAnswers(solved&&list?list:[]);
   st.set("bm",solved?"1":"0");st.set("bp_"+book,page);
 }
+
+/* الحلول المكتوبة على الصفحة: كل حل في مربعه [يسار، أعلى، يمين، أسفل، عدد السطور، ١ = في وسط المربع، ٢ = وكل سطر في الوسط] */
+const PAGE_H=1454/1211; /* ارتفاع الصفحة بالنسبة لعرضها */
+function drawAnswers(list){
+  const pg=$("pg");pg.querySelectorAll(".ans,.pop").forEach(e=>e.remove());
+  list.forEach(([q,a,b])=>{
+    const parts=Array.isArray(a)?a:[[a,b]];
+    parts.forEach(([t,bx])=>{
+      if(!bx)return;
+      const el=document.createElement("button");el.type="button";el.className="ans";
+      el.textContent=t;el.setAttribute("aria-expanded","false");el.setAttribute("aria-label",`${q}: ${t}`);
+      el.style.cssText=`left:${bx[0]}%;top:${bx[1]}%;width:${bx[2]-bx[0]}%;height:${bx[3]-bx[1]}%`;
+      el.dataset.rows=bx[4]||1;el.dataset.h=(bx[3]-bx[1])*PAGE_H;
+      if(bx[5])el.classList.add("one");
+      if(bx[5]===2||bx[2]-bx[0]<15)el.classList.add("mid");
+      el.onclick=e=>{e.stopPropagation();pop(el,q,Array.isArray(a)?a.map(p=>p[0]).join("، "):t,bx)};
+      pg.appendChild(el);
+    });
+  });
+  fitAll();
+}
+/* يصغّر الخط لين يدخل الحل في مكانه. القياس بـ cqw فيبقى صحيح على أي عرض */
+function fitAll(){
+  $("pg").querySelectorAll(".ans").forEach(el=>{
+    const h=Number(el.dataset.h), rows=Number(el.dataset.rows);
+    const fits=()=>el.scrollHeight<=el.clientHeight+1&&el.scrollWidth<=el.clientWidth+1;
+    /* يصغّر الخط على نفس عدد السطور أولًا، وما يزيد السطور إلا إذا صار الخط صغير جدًا */
+    for(let r=rows;r<=rows*3+2;r++){
+      const lh=h/r;let fs=Math.min(2.5,lh*.74);
+      el.style.lineHeight=lh+"cqw";
+      while(fs>=(r===rows?1.35:.9)){el.style.fontSize=fs+"cqw";if(fits())return;fs*=.95}
+    }
+    let fs=parseFloat(el.style.fontSize);
+    while(!fits()&&fs>.8){fs*=.9;el.style.fontSize=fs+"cqw";el.style.lineHeight=fs*1.25+"cqw"}
+  });
+}
+function pop(el,q,t,bx){
+  const pg=$("pg"),open=el.getAttribute("aria-expanded")==="true";
+  pg.querySelectorAll(".pop").forEach(e=>e.remove());pg.querySelectorAll(".ans").forEach(e=>e.setAttribute("aria-expanded","false"));
+  if(open)return;
+  const p=document.createElement("div");p.className="pop";p.setAttribute("role","status");
+  p.innerHTML=`<small>${esc(q)}</small><b>${esc(t)}</b>`;
+  const below=bx[3]<70;p.style[below?"top":"bottom"]=below?`calc(${bx[3]}% + 6px)`:`calc(${100-bx[1]}% + 6px)`;
+  pg.appendChild(p);el.setAttribute("aria-expanded","true");
+}
+document.addEventListener("click",()=>{const p=document.querySelector(".pop");if(p){p.remove();document.querySelectorAll(".ans").forEach(e=>e.setAttribute("aria-expanded","false"))}});
+if(document.fonts)document.fonts.ready.then(fitAll);
+$("img").addEventListener("load",fitAll);
 $("change").onclick=()=>{start=String(page);renderSetup();scrollTo({top:0})};
 document.querySelectorAll("#modes button").forEach(b=>b.onclick=()=>{solved=b.dataset.m==="1";render()});
 $("prev").onclick=()=>{page--;render();scrollTo({top:0})};
