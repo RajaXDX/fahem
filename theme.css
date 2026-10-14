@@ -30,6 +30,8 @@
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .logo{display:inline-flex;align-items:center;gap:10px;color:var(--fg);text-decoration:none;border-radius:12px}
 .logo-mark{width:40px;height:40px;border-radius:12px;background:var(--butter);color:var(--on-butter);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:1.3rem;line-height:1;padding-bottom:4px;box-shadow:inset 0 -5px 0 rgb(0 0 0 / .13);transform:rotate(-6deg)}
+.logo.shake{animation:logo-shake .9s ease-in-out}
+@keyframes logo-shake{0%,100%{transform:none}15%{transform:translateX(-6px) rotate(-4deg)}30%{transform:translateX(5px) rotate(3deg)}45%{transform:translateX(-4px) rotate(-2deg)}60%{transform:translateX(3px) rotate(1deg)}75%{transform:translateX(-2px)}}
 .logo-word{font-family:var(--display);font-weight:700;font-size:1.5rem;line-height:1.2}
 .logo-word small{display:block;font-family:var(--body);font-weight:500;font-size:.72rem;color:var(--muted);line-height:1.3}
 .themebtn{appearance:none;width:40px;height:40px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);display:grid;place-items:center;cursor:pointer;padding:0;flex:none}

@@ -15,6 +15,18 @@
     var b=document.getElementById("themebtn");
     if(b)b.onclick=function(){var n=dark()?"light":"dark";root.dataset.theme=n;try{localStorage.setItem("theme",n)}catch(e){}paint()};
     paint();
+    /* اللوقو: يهتز ثم يرجعك للرئيسية */
+    var still=matchMedia("(prefers-reduced-motion: reduce)");
+    document.querySelectorAll("a.logo").forEach(function(a){
+      a.addEventListener("click",function(e){
+        if(e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||still.matches)return;
+        e.preventDefault();
+        if(a.classList.contains("shake"))return;
+        a.classList.add("shake");
+        setTimeout(function(){location.href=a.href},900);
+      });
+    });
   });
+  addEventListener("pageshow",function(){document.querySelectorAll("a.logo.shake").forEach(function(a){a.classList.remove("shake")})});
   if(mq.addEventListener)mq.addEventListener("change",paint);
 })();
