@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>الكتب المحلولة · فاهم</title>
+<title>الكتب · فاهم</title>
 <meta name="theme-color" content="#fbf6e8">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@700&family=Noto+Kufi+Arabic:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
@@ -82,7 +82,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
     <a class="mode" href="study.html#quiz">الأسئلة</a>
     <a class="mode" href="books.html" aria-current="page">الكتب</a>
   </nav>
-  <h1>الكتب المحلولة</h1>
+  <h1>الكتب</h1>
 
   <section class="card" id="setup"></section>
 
@@ -103,7 +103,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
     <section class="sol" id="sol" hidden></section>
   </section>
 </div>
-<script>const SOL={e:{},i:{}};</script>
+<script>const SOL={e:{},i:{},m1:{},m2:{},c1:{},c2:{},l1:{}};</script>
 <script src="sol/e1.js?v=20261014b"></script><script src="sol/e2.js?v=20261014b"></script><script src="sol/e3.js?v=20261014b"></script>
 <script src="sol/e4a.js?v=20261014b"></script><script src="sol/e4b.js?v=20261014b"></script><script src="sol/e5.js?v=20261014b"></script>
 <script src="sol/e6.js?v=20261014b"></script><script src="sol/e7.js?v=20261014b"></script><script src="sol/e8.js?v=20261014b"></script>
@@ -111,11 +111,19 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 <script src="sol/i5.js?v=20261014b"></script><script src="sol/i6.js?v=20261014b"></script><script src="sol/i7.js?v=20261014b"></script>
 <script src="sol/i8.js?v=20261014b"></script><script src="sol/i9.js?v=20261014b"></script><script src="sol/i10.js?v=20261014b"></script>
 <script>
-const N={e:258,i:246},NAME={e:"الاجتماعيات",i:"الدراسات الإسلامية"};
+const N={e:258,i:246,m1:183,m2:201,c1:226,c2:228,l1:234};
+const NAME={e:"الاجتماعيات",i:"الدراسات الإسلامية",m1:"الرياضيات · الفصل الأول",m2:"الرياضيات · الفصل الثاني",c1:"العلوم · الفصل الأول",c2:"العلوم · الفصل الثاني",l1:"لغتي الخالدة · الجزء الأول"};
+/* ارتفاع صور الصفحات (العرض كله ١٢١١) */
+const IMG_H={e:1454,i:1454,m1:1562,m2:1562,c1:1562,c2:1562,l1:1454};
 /* بداية كل وحدة أو قسم (رقم الصفحة في الكتاب) */
 const PARTS={
   e:[[10,"الوحدة الأولى: الكون والأرض"],[44,"الوحدة الثانية: الحضارات"],[76,"الوحدة الثالثة: التخطيط"],[90,"الوحدة الرابعة: العصر النبوي"],[150,"الوحدة الخامسة: عصر الخلفاء الراشدين"],[184,"الوحدة السادسة: الهوية الشخصية"],[202,"الوحدة السابعة: الأمن الوطني"],[236,"الوحدة الثامنة: الحوار"]],
-  i:[[13,"التوحيد"],[55,"التفسير"],[119,"الحديث"],[167,"الفقه"]]
+  i:[[13,"التوحيد"],[55,"التفسير"],[119,"الحديث"],[167,"الفقه"]],
+  m1:[[10,"الفصل ١: الجبر والدوال"],[48,"الفصل ٢: الأعداد الصحيحة"],[92,"الفصل ٣: المعادلات الخطية والدوال"],[138,"الفصل ٤: النسبة والتناسب"]],
+  m2:[[10,"الفصل ٥: تطبيقات النسبة المئوية"],[42,"الفصل ٦: الإحصاء"],[74,"الفصل ٧: الاحتمال"],[96,"الفصل ٨: الهندسة: المضلعات"],[148,"الفصل ٩: القياس: الأشكال الثنائية والثلاثية الأبعاد"]],
+  c1:[[16,"الفصل ١: طبيعة العلم"],[42,"الفصل ٢: الحركة والقوى والآلات البسيطة"],[80,"الفصل ٣: المادة وتغيراتها"],[102,"الفصل ٤: الذرات والعناصر والجدول الدوري"],[132,"الفصل ٥: الصخور والمعادن"],[160,"الفصل ٦: القوى المشكلة للأرض"]],
+  c2:[[14,"الفصل ٧: الغلاف الجوي المتحرك"],[40,"الفصل ٨: استكشاف الفضاء"],[76,"الفصل ٩: الخلايا لبنات الحياة"],[98,"الفصل ١٠: الحيوانات اللافقارية"],[124,"الفصل ١١: الحيوانات الفقارية"],[156,"الفصل ١٢: علم البيئة"],[182,"الفصل ١٣: موارد الأرض"]],
+  l1:[[12,"الوحدة الأولى: القيم الإسلامية"],[84,"الوحدة الثانية: الأعلام"],[160,"الوحدة الثالثة: الوطن"]]
 };
 const ar=n=>n.toLocaleString("ar-SA");
 const st={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
@@ -138,11 +146,11 @@ function renderSetup(){
   }
   s.innerHTML=`<div><h2 class="stitle">افتح كتاب</h2><p class="ref">اختر الكتاب، وبعدها اضغط «افتح الكتاب».</p></div>
     <div class="sstep"><b>١. اختر الكتاب</b>
-      <div class="pick2">${Object.keys(NAME).map(k=>`<button type="button" class="bpick" data-b="${k}" aria-pressed="${book===k}"><b>${NAME[k]}</b><span>${ar(N[k])} صفحة · حلول ${ar(solvedCount(k))} صفحة</span></button>`).join("")}</div></div>
+      <div class="pick2">${Object.keys(NAME).map(k=>`<button type="button" class="bpick" data-b="${k}" aria-pressed="${book===k}"><b>${NAME[k]}</b><span>${ar(N[k])} صفحة · ${solvedCount(k)?`حلول ${ar(solvedCount(k))} صفحة`:"بدون حلول للحين"}</span></button>`).join("")}</div></div>
     ${book?`<div class="sstep"><b>٢. من وين تبدأ؟</b>
       <div class="chipbar">${starts.map(([v,l])=>`<button type="button" data-s="${v}" aria-pressed="${start===v}">${l}</button>`).join("")}</div></div>
-    <div class="sstep"><b>٣. محلول أو غير محلول؟</b>
-      <div class="chipbar"><button type="button" data-m="1" aria-pressed="${solved}">محلول: الحلول مكتوبة على الصفحة</button><button type="button" data-m="0" aria-pressed="${!solved}">غير محلول: أحل بنفسي</button></div></div>`:""}
+    ${solvedCount(book)?`<div class="sstep"><b>٣. محلول أو غير محلول؟</b>
+      <div class="chipbar"><button type="button" data-m="1" aria-pressed="${solved}">محلول: الحلول مكتوبة على الصفحة</button><button type="button" data-m="0" aria-pressed="${!solved}">غير محلول: أحل بنفسي</button></div></div>`:""}`:""}
     <button type="button" class="btn" id="go" ${book?"":"disabled"}>${book?"افتح الكتاب":"اختر الكتاب أولًا"}</button>`;
   s.querySelectorAll(".bpick").forEach(b=>b.onclick=()=>{if(book!==b.dataset.b){book=b.dataset.b;start=null}renderSetup()});
   s.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{start=b.dataset.s;renderSetup()});
@@ -155,11 +163,13 @@ function render(){
   $("wrap").dataset.b=book;
   $("vtitle").textContent=NAME[book];
   document.querySelectorAll("#modes button").forEach(b=>b.setAttribute("aria-pressed",(b.dataset.m==="1")===solved));
+  const has=solvedCount(book)>0;$("modes").hidden=$("jump").hidden=!has;
+  $("img").height=IMG_H[book];PAGE_H=IMG_H[book]/1211;
   $("img").src=`b/${book}/${String(page).padStart(3,"0")}.webp`;$("img").alt=`${NAME[book]} – صفحة ${ar(page)} من الكتاب`;
   $("num").value=page;$("num").max=N[book];$("of").textContent=`من ${ar(N[book])}`;
   const list=SOL[book][page], keys=Object.keys(SOL[book]).map(Number).sort((a,b)=>a-b);
   $("jump").innerHTML=`<option value="">صفحات فيها حلول (${ar(keys.length)})</option>`+keys.map(k=>`<option value="${k}" ${k===page?"selected":""}>صفحة ${ar(k)}</option>`).join("");
-  $("hint").textContent=!list?"ما فيه أسئلة في هذه الصفحة. استخدم قائمة «صفحات فيها حلول» للتنقل."
+  $("hint").textContent=!has?"هذا الكتاب للحين بدون حلول.":!list?"ما فيه أسئلة في هذه الصفحة. استخدم قائمة «صفحات فيها حلول» للتنقل."
     :solved?(list.some(([,a,b])=>Array.isArray(a)||b)?"الحلول مكتوبة بالأزرق على الصفحة. اضغط على أي حل عشان تكبّره.":"حلول هذه الصفحة تحتها."):"الحلول مخفية. اختر «محلول» عشان تطلع على الصفحة.";
   drawAnswers(solved&&list?list:[]);
   /* الحلول اللي ما انحدد مكانها على الصفحة للحين تطلع تحت الصفحة */
@@ -170,7 +180,7 @@ function render(){
 }
 
 /* الحلول المكتوبة على الصفحة: كل حل في مربعه [يسار، أعلى، يمين، أسفل، عدد السطور، ١ = في وسط المربع، ٢ = وكل سطر في الوسط] */
-const PAGE_H=1454/1211; /* ارتفاع الصفحة بالنسبة لعرضها */
+let PAGE_H=1454/1211; /* ارتفاع الصفحة بالنسبة لعرضها */
 function drawAnswers(list){
   const pg=$("pg");pg.querySelectorAll(".ans,.pop").forEach(e=>e.remove());
   list.forEach(([q,a,b])=>{
