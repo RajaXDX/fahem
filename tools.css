@@ -1,0 +1,53 @@
+/* فاهم — تنسيق صفحات الأدوات (الأخطاء، الخطة، البحث، اسأل فاهم). الألوان من theme.css */
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.75}
+[hidden]{display:none!important}
+a{color:var(--gold)}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:28px 56px;display:flex;flex-direction:column;gap:20px}
+.wrap[data-s="t"],[data-s="t"]{--acc:var(--tajweed);--acc-soft:var(--tajweed-soft)}
+.wrap[data-s="s"],[data-s="s"]{--acc:var(--social);--acc-soft:var(--social-soft)}
+[data-s="i"]{--acc:var(--tajweed);--acc-soft:var(--tajweed-soft)}
+.page-head{display:flex;flex-direction:column;gap:4px}
+.page-head .eyebrow{font-size:.85rem;color:var(--gold);font-weight:600}
+.page-head h1{font-family:var(--display);font-size:clamp(1.6rem,5vw,2.3rem);line-height:1.4;margin:0}
+.page-head p{margin:0;color:var(--muted);max-width:60ch}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.card h2{font-family:var(--display);font-size:1.15rem;margin:0;line-height:1.5}
+.ref{color:var(--muted);font-size:.85rem}
+.btn{appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;font:inherit;font-weight:600;text-decoration:none;border-radius:12px;padding:10px 18px;cursor:pointer;border:1.5px solid transparent;background:var(--butter);color:var(--on-butter);box-shadow:inset 0 -3px 0 rgb(0 0 0 / .12)}
+.btn.ghost{background:var(--surface);color:var(--fg);border-color:var(--line);box-shadow:none}
+.btn.ghost:hover{border-color:var(--gold)}
+.btn.small{padding:5px 12px;font-size:.88rem;border-radius:999px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.chipbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chipbar button{appearance:none;font:inherit;font-size:.9rem;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:4px 14px;cursor:pointer}
+.chipbar button[aria-pressed="true"]{border-color:var(--gold);background:var(--gold-soft);font-weight:600}
+.tag{display:inline-block;font-size:.78rem;font-weight:600;border-radius:999px;padding:1px 10px;background:var(--acc-soft,var(--gold-soft));color:var(--acc,var(--gold))}
+.empty{text-align:center;padding:28px 18px;color:var(--muted)}
+.empty b{display:block;font-family:var(--display);font-size:1.2rem;color:var(--fg);margin-bottom:4px}
+.bar{height:6px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--butter);border-radius:99px}
+
+/* أسئلة الاختيار (المراجعة) */
+.q{font-family:var(--display);font-size:1.12rem;line-height:1.7;margin:0;text-wrap:balance}
+.opts{display:grid;gap:8px}
+.opt{appearance:none;text-align:right;font:inherit;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:10px 14px;cursor:pointer;line-height:1.6}
+.opt:hover:not(:disabled){border-color:var(--acc,var(--gold))}
+.opt:disabled{cursor:default}
+.opt.ok{border-color:var(--ok);background:var(--ok-soft);font-weight:600}
+.opt.bad{border-color:var(--bad);background:var(--bad-soft)}
+.fb{margin:0;font-size:.92rem}
+.fb b.ok{color:var(--ok)} .fb b.bad{color:var(--bad)}
+
+/* حقل البحث والكتابة */
+.field{display:flex;gap:8px;align-items:center;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:6px 6px 6px 14px}
+.field:focus-within{border-color:var(--gold)}
+.field svg{width:20px;height:20px;color:var(--muted);flex:none;margin-inline-start:6px}
+.field input{flex:1;min-width:0;border:0;background:none;font:inherit;font-size:1.05rem;color:var(--fg);padding:8px 2px;outline:none}
+.field input::placeholder{color:var(--muted)}
+mark{background:var(--hl);color:inherit;border-radius:3px;padding-inline:1px}
+

@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>دفتر أخطائي · فاهم</title>
+<meta name="theme-color" content="#fbf6e8">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="tools.css?v=20261014">
+<script src="theme.js"></script>
+<script src="progress.js?v=20261014"></script>
+<style>
+/* Layout: notebook header, subject filter, a "review my mistakes" card, then the list of saved mistakes (or the review quiz in its place) */
+.list{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.mis{background:var(--surface);border:1px solid var(--line);border-inline-start:4px solid var(--acc,var(--gold));border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.mis .row{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.mis b{font-family:var(--display);font-weight:600;line-height:1.6}
+.mis .right{color:var(--ok);font-weight:600}
+.del{appearance:none;border:0;background:none;color:var(--muted);font:inherit;font-size:.82rem;cursor:pointer;padding:2px 6px;border-radius:8px}
+.del:hover{color:var(--bad);background:var(--bad-soft)}
+.big{font-family:var(--display);font-size:2.4rem;margin:0;line-height:1.2;font-variant-numeric:tabular-nums}
+.qhead{display:flex;justify-content:space-between;gap:10px;font-size:.88rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.danger{color:var(--bad)!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="./" aria-label="فاهم · الصفحة الرئيسية"><span class="logo-mark" aria-hidden="true">ف</span><span class="logo-word">فاهم<small>ملخصات أول متوسط</small></span></a>
+    <div class="top-end"><a class="homelink" href="./"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>الرئيسية</a><button type="button" class="themebtn" id="themebtn" aria-label="الوضع الداكن"></button></div>
+  </header>
+
+  <div class="page-head">
+    <h1>📒 دفتر أخطائي</h1>
+    <p>كل سؤال تغلط فيه ينحفظ هنا تلقائيًا. راجعه، وإذا جاوبته صح ينشال من الدفتر.</p>
+  </div>
+
+  <div class="chipbar" id="filter"></div>
+  <main id="main"></main>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const ar=n=>n.toLocaleString("ar-SA");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+let filter=null, R=null; /* R: جلسة المراجعة الحالية */
+
+const list=()=>Fahem.mistakes().filter(m=>!filter||m.s===filter);
+function subjects(){const m={};Fahem.mistakes().forEach(x=>{m[x.s]=m[x.s]||{n:0,name:x.sn};m[x.s].n++});return m}
+
+function renderFilter(){
+  const S=subjects(),keys=Object.keys(S);
+  if(filter&&!S[filter])filter=null;
+  $("filter").hidden=keys.length<2||!!R;
+  $("filter").innerHTML=[[null,"الكل",Fahem.mistakes().length],...keys.map(k=>[k,S[k].name,S[k].n])].map(([k,l,n])=>`<button type="button" data-k="${k??""}" aria-pressed="${k===filter}">${esc(l)} (${ar(n)})</button>`).join("");
+  $("filter").querySelectorAll("button").forEach(b=>b.onclick=()=>{filter=b.dataset.k||null;render()});
+}
+function render(){
+  renderFilter();
+  if(R)return renderQ();
+  const L=list();
+  if(!Fahem.mistakes().length){
+    $("main").innerHTML=`<div class="card empty"><b>دفترك فاضي 🎉</b>إذا غلطت في سؤال في قسم «الأسئلة» بيجي هنا عشان تراجعه.<div class="actions" style="justify-content:center;margin-top:10px"><a class="btn" href="study.html#quiz">اختبر نفسك</a></div></div>`;return;
+  }
+  $("main").innerHTML=`<div class="card">
+      <p class="big">${ar(L.length)}</p>
+      <p style="margin:0">${L.length===1?"سؤال":L.length<11?"أسئلة":"سؤالًا"} في دفترك${filter?` في ${esc(L[0]?.sn||"")}`:""}. جاوبها مرة ثانية، واللي تجاوبه صح ينشال.</p>
+      <div class="actions"><button type="button" class="btn" id="start">راجع أخطائي ←</button></div>
+    </div>
+    <ul class="list" style="margin-top:14px">${L.map(m=>`<li class="mis" data-s="${esc(m.s)}">
+      <span class="row"><span><span class="tag">${esc(m.sn)}</span>${m.n>1?` · غلطت فيه ${m.n===2?"مرتين":m.n<11?ar(m.n)+" مرات":ar(m.n)+" مرة"}`:""}</span><button type="button" class="del" data-id="${esc(m.id)}" aria-label="شيل السؤال من الدفتر">شيله ✕</button></span>
+      <b>${esc(m.q)}</b>
+      <span>الصحيح: <span class="right">${esc(m.a)}</span>${m.ref?` <span class="ref">· ${esc(m.ref)}</span>`:""}</span>
+    </li>`).join("")}</ul>
+    <div class="actions" style="margin-top:16px"><button type="button" class="btn ghost small danger" id="clear">امسح الدفتر كله</button></div>`;
+  $("start").onclick=()=>{R={Q:shuffle(L),i:0,ok:0};render();scrollTo({top:0})};
+  $("main").querySelectorAll(".del").forEach(b=>b.onclick=()=>{Fahem.removeMistake(b.dataset.id);render()});
+  $("clear").onclick=()=>{if(confirm("تبي تمسح كل الأسئلة من دفتر أخطائي؟")){Fahem.store.set("mistakes","[]");render()}};
+}
+function renderQ(){
+  const {Q,i}=R;
+  if(i>=Q.length){
+    const left=Fahem.mistakes().length;
+    $("main").innerHTML=`<div class="card"><p class="big">${ar(R.ok)} / ${ar(Q.length)}</p><p style="margin:0">${R.ok===Q.length?"ممتاز! صححت كل أخطائك 🎉":`صححت ${ar(R.ok)}، والباقي يظل في دفترك لين تتقنه.`}</p>
+      <div class="actions">${left?`<button type="button" class="btn" id="again">راجع الباقي (${ar(left)})</button>`:""}<button type="button" class="btn ghost" id="back">ارجع للدفتر</button></div></div>`;
+    if($("again"))$("again").onclick=()=>{R={Q:shuffle(list()),i:0,ok:0};render()};
+    $("back").onclick=()=>{R=null;render()};return;
+  }
+  const m=Q[i],opts=shuffle(m.o);
+  $("main").innerHTML=`<div class="card" data-s="${esc(m.s)}">
+    <div class="qhead"><span>${esc(m.sn)} · سؤال ${ar(i+1)} من ${ar(Q.length)}</span><span>صححت: ${ar(R.ok)}</span></div>
+    <div class="bar"><i style="width:${i/Q.length*100}%"></i></div>
+    <p class="q">${esc(m.q)}</p>
+    <div class="opts">${opts.map((o,j)=>`<button type="button" class="opt" data-j="${j}">${esc(o)}</button>`).join("")}</div>
+    <p class="fb" id="fb" hidden></p>
+    <div class="actions"><button type="button" class="btn" id="next" hidden>${i+1<Q.length?"التالي":"شوف النتيجة"}</button><button type="button" class="btn ghost small" id="stop">وقّف المراجعة</button></div>
+  </div>`;
+  const btns=[...$("main").querySelectorAll(".opt")];
+  btns.forEach(b=>b.onclick=()=>{
+    const right=opts[b.dataset.j]===m.a;
+    btns.forEach(x=>{x.disabled=true;if(opts[x.dataset.j]===m.a)x.classList.add("ok")});
+    if(right){R.ok++;Fahem.removeMistake(m.id)}else{b.classList.add("bad");Fahem.addMistake(m.s,m.sn,[m.q,m.a,...m.o.filter(o=>o!==m.a),m.ref])}
+    Fahem.activity();
+    $("fb").hidden=false;
+    $("fb").innerHTML=right?`<b class="ok">صح ✓</b> وانشال من دفترك.`:`<b class="bad">لسا ✗</b> الصحيح: <b>${esc(m.a)}</b>${m.ref?` <span class="ref">· راجعه في ${esc(m.ref)}</span>`:""}`;
+    $("next").hidden=false;$("next").focus({preventScroll:true});
+  });
+  $("next").onclick=()=>{R.i++;renderQ()};
+  $("stop").onclick=()=>{R=null;render()};
+}
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>اسأل فاهم</title>
+<meta name="theme-color" content="#fbf6e8">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Kufi+Arabic:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="tools.css?v=20261014">
+<script src="theme.js"></script>
+<script src="progress.js?v=20261014"></script>
+<style>
+/* Layout: a chat — the student's questions on one side, Fahem's answers (taken from the site's own lessons and solutions) on the other, and the question box pinned at the bottom */
+.wrap{min-height:100dvh}
+.chat{display:flex;flex-direction:column;gap:12px;flex:1}
+.msg{max-width:88%;border-radius:18px;padding:12px 16px;line-height:1.8}
+.msg.me{align-self:flex-start;background:var(--butter);color:var(--on-butter);border-end-start-radius:6px;font-weight:600}
+.msg.bot{align-self:flex-end;background:var(--surface);border:1px solid var(--line);border-end-end-radius:6px;display:flex;flex-direction:column;gap:8px}
+.msg.bot .who{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--muted)}
+.msg.bot .who .logo-mark{width:24px;height:24px;border-radius:7px;font-size:.8rem;padding-bottom:2px;box-shadow:inset 0 -3px 0 rgb(0 0 0 / .13)}
+.msg .main{font-size:1.05rem;white-space:pre-line}
+.msg .main b{font-family:var(--display)}
+.msg .src{font-size:.85rem;color:var(--muted)}
+.msg .src a{font-weight:600}
+.msg .also{margin:0;padding-inline-start:18px;font-size:.88rem;display:flex;flex-direction:column;gap:2px}
+.dots{display:inline-flex;gap:4px;padding:4px 0}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:blink 1s infinite}
+.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+@keyframes blink{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.dots i{animation:none}}
+.composer{position:sticky;bottom:0;background:var(--bg);padding-block:10px calc(10px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:8px}
+.field .send{appearance:none;border:0;background:var(--butter);color:var(--on-butter);width:42px;height:42px;border-radius:11px;display:grid;place-items:center;cursor:pointer;flex:none}
+.field .send svg{width:20px;height:20px;transform:scaleX(-1)}
+.tips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.tips button{appearance:none;font:inherit;font-size:.88rem;border:1.5px dashed var(--line);background:none;color:var(--fg);border-radius:999px;padding:4px 14px;cursor:pointer;white-space:nowrap;flex:none}
+.tips button:hover{border-color:var(--gold)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="./" aria-label="فاهم · الصفحة الرئيسية"><span class="logo-mark" aria-hidden="true">ف</span><span class="logo-word">فاهم<small>ملخصات أول متوسط</small></span></a>
+    <div class="top-end"><a class="homelink" href="./"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>الرئيسية</a><button type="button" class="themebtn" id="themebtn" aria-label="الوضع الداكن"></button></div>
+  </header>
+
+  <div class="page-head">
+    <h1>اسأل <mark class="hl">فاهم</mark></h1>
+    <p>اكتب سؤالك عن التجويد أو الاجتماعيات أو الدراسات الإسلامية، وفاهم يجاوبك من دروس الموقع وحلول الكتب. وما يعرف أشياء من برّا المنهج.</p>
+  </div>
+
+  <div class="chat" id="chat" aria-live="polite"></div>
+
+  <div class="composer">
+    <div class="tips" id="tips"></div>
+    <form class="field" id="form">
+      <input id="q" type="text" placeholder="اكتب سؤالك هنا…" aria-label="سؤالك" autocomplete="off" enterkeyhint="send">
+      <button class="send" type="submit" aria-label="أرسل"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    </form>
+  </div>
+</div>
+
+<script src="bank.js?v=20261013"></script>
+<script src="lessons.js?v=20261013"></script>
+<script src="bank_i.js?v=20261013"></script>
+<script src="lessons_i.js?v=20261013"></script>
+<script src="finder.js?v=20261014"></script>
+<script>
+const $=id=>document.getElementById(id);
+const ar=n=>n.toLocaleString("ar-SA");
+const esc=Finder.esc;
+const TIPS=["ما تعريف التجويد؟","ما الفرق بين اللحن الجلي والخفي؟","كم عدد كواكب المجموعة الشمسية؟","ما أنواع التوحيد؟","متى كانت غزوة بدر؟","ما المقصود بالأمن الفكري؟"];
+const chat=$("chat");
+let loading=Finder.ready();
+
+function bubble(cls,html){const m=document.createElement("div");m.className="msg "+cls;m.innerHTML=html;chat.appendChild(m);m.scrollIntoView({block:"end",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});return m}
+const WHO=`<span class="who"><span class="logo-mark" aria-hidden="true">ف</span>فاهم</span>`;
+
+/* أول جملتين أو ثلاث من نص الدرس، عشان الجواب يكون مختصر */
+function brief(t,max=380){t=String(t);if(t.length<=max)return t;const cut=t.slice(0,max);const i=Math.max(cut.lastIndexOf(" · "),cut.lastIndexOf("."),cut.lastIndexOf("،"));return cut.slice(0,i>max*.5?i:max).replace(/[ ·،.]+$/,"")+" …"}
+
+function source(d){
+  if(d.type==="q")return `من بنك أسئلة ${Finder.subjName(d)}${d.ref?` · راجعها في ${d.s==="i"?"الكتاب":"الملخص"} ${esc(d.ref)}`:""} · <a href="${d.url}">أسئلة أكثر</a>`;
+  if(d.type==="sol")return `من حل كتاب ${Finder.subjName(d)}، صفحة ${ar(d.page)} · <a href="${d.url}">افتح الصفحة</a>`;
+  if(d.type==="num")return `من «أرقام لازم تحفظها» في الاجتماعيات · <a href="${d.url}">احفظها بالبطاقات</a>`;
+  return `من درس «${esc(d.lesson)}» في ${Finder.subjName(d)} · <a href="${d.url}">افتح الدرس</a>`;
+}
+function answer(q){
+  const res=Finder.search(q,{limit:8});
+  const best=res[0];
+  if(!best||best.score<1)return `${WHO}<div class="main">ما لقيت جواب واضح لهذا السؤال في دروس فاهم 🤔\nجرّب تكتبه بكلمات ثانية، أو اسأل عن شي من دروس التجويد والاجتماعيات والدراسات الإسلامية.</div><div class="src"><a href="search.html?q=${encodeURIComponent(q)}">دوّر عليه في البحث ←</a></div>`;
+  const d=best.d;
+  let main;
+  if(d.type==="q")main=`<b>${esc(d.answer)}</b>`;
+  else if(d.type==="num")main=`<b>${esc(d.answer)}</b>: ${esc(d.title)}`;
+  else if(d.type==="sol")main=`${esc(d.answer)}`;
+  else main=`${d.head?`<b>${esc(d.head)}</b>\n`:""}${esc(brief(d.text))}`;
+  const seen=new Set([d.title]);
+  const also=res.slice(1).filter(r=>r.score>best.score*.45&&!seen.has(r.d.title)&&seen.add(r.d.title)).slice(0,2);
+  return `${WHO}<div class="main">${main}</div><div class="src">${source(d)}</div>${also.length?`<div class="src">وممكن يفيدك كمان:</div><ul class="also">${also.map(r=>`<li><a href="${r.d.type==="q"||r.d.type==="num"?`search.html?q=${encodeURIComponent(q)}`:r.d.url}">${esc(r.d.type==="lesson"?r.d.title:brief(r.d.title,90))}</a> <span class="ref">(${Finder.typeName(r.d)})</span></li>`).join("")}</ul>`:""}`;
+}
+async function ask(q){
+  q=q.trim();if(!q)return;
+  bubble("me",esc(q));$("q").value="";
+  const wait=bubble("bot",`${WHO}<span class="dots" aria-label="فاهم يكتب"><i></i><i></i><i></i></span>`);
+  await Promise.all([loading,new Promise(r=>setTimeout(r,450))]);
+  wait.innerHTML=answer(q);
+  wait.scrollIntoView({block:"nearest"});
+  Fahem.activity();
+}
+bubble("bot",`${WHO}<div class="main">هلا! أنا فاهم 👋\nاسألني عن أي شي في دروسك، مثل: «ما أقسام اللحن؟» أو «ما أهمية الأمن؟».</div>`);
+$("tips").innerHTML=TIPS.map(t=>`<button type="button">${t}</button>`).join("");
+$("tips").querySelectorAll("button").forEach(b=>b.onclick=()=>ask(b.textContent));
+$("form").onsubmit=e=>{e.preventDefault();ask($("q").value)};
+const pre=new URLSearchParams(location.search).get("q");if(pre)ask(pre);
+</script>
+</body>
+</html>

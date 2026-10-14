@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>البحث · فاهم</title>
+<meta name="theme-color" content="#fbf6e8">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Kufi+Arabic:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="tools.css?v=20261014">
+<script src="theme.js"></script>
+<script src="progress.js?v=20261014"></script>
+<style>
+/* Layout: search box pinned under the header, type filter chips, then result cards */
+.searchbar{position:sticky;top:0;z-index:5;background:var(--bg);padding-block:8px;display:flex;flex-direction:column;gap:10px}
+.count{color:var(--muted);font-size:.88rem;margin:0}
+.results{display:flex;flex-direction:column;gap:10px}
+.res{display:flex;flex-direction:column;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-decoration:none;color:var(--fg)}
+a.res:hover{border-color:var(--acc,var(--gold))}
+.res .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}
+.res b{font-family:var(--display);font-weight:600;line-height:1.6}
+.res p{margin:0;color:var(--muted);font-size:.92rem;line-height:1.7}
+.res .ans{color:var(--fg);background:var(--ok-soft);border-radius:10px;padding:6px 10px;white-space:pre-line}
+.res .go{font-size:.85rem;font-weight:600;color:var(--gold)}
+[data-s="b"]{--acc:var(--gold);--acc-soft:var(--gold-soft)}
+.tips{display:flex;flex-wrap:wrap;gap:8px}
+.tips button{appearance:none;font:inherit;font-size:.9rem;border:1.5px dashed var(--line);background:none;color:var(--fg);border-radius:999px;padding:4px 14px;cursor:pointer}
+.tips button:hover{border-color:var(--gold)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="./" aria-label="فاهم · الصفحة الرئيسية"><span class="logo-mark" aria-hidden="true">ف</span><span class="logo-word">فاهم<small>ملخصات أول متوسط</small></span></a>
+    <div class="top-end"><a class="homelink" href="./"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>الرئيسية</a><button type="button" class="themebtn" id="themebtn" aria-label="الوضع الداكن"></button></div>
+  </header>
+
+  <div class="page-head">
+    <h1>ابحث في فاهم</h1>
+    <p>دوّر على أي كلمة في الدروس والأسئلة وحلول الكتب.</p>
+  </div>
+
+  <div class="searchbar">
+    <form class="field" id="form" role="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="مثلًا: البسملة، خطوط الطول، التوحيد" aria-label="كلمة البحث" autocomplete="off" enterkeyhint="search">
+    </form>
+    <div class="chipbar" id="types"></div>
+  </div>
+
+  <p class="count" id="count" aria-live="polite">نجهّز البحث…</p>
+  <div class="tips" id="tips"></div>
+  <div class="results" id="results"></div>
+
+  <footer class="foot"><span class="logo-mark" aria-hidden="true">ف</span><span>ما لقيت اللي تبيه؟ اسأل <a href="ask.html">فاهم</a> بسؤال كامل.</span></footer>
+</div>
+
+<script src="bank.js?v=20261013"></script>
+<script src="lessons.js?v=20261013"></script>
+<script src="bank_i.js?v=20261013"></script>
+<script src="lessons_i.js?v=20261013"></script>
+<script src="finder.js?v=20261014"></script>
+<script>
+const $=id=>document.getElementById(id);
+const ar=n=>n.toLocaleString("ar-SA");
+const TYPES=[[null,"الكل"],["lesson","الدروس"],["q","الأسئلة"],["sol","حلول الكتب"]];
+const TIPS=["اللحن الجلي","البسملة","خطوط الطول","المجموعة الشمسية","التوحيد","الشرك الأصغر","غزوة بدر","الأمن الوطني"];
+let type=null,ready=false,limit=30;
+const params=new URLSearchParams(location.search);
+$("q").value=params.get("q")||"";
+
+$("types").innerHTML=TYPES.map(([v,l])=>`<button type="button" data-t="${v??""}" aria-pressed="${v===type}">${l}</button>`).join("");
+$("types").querySelectorAll("button").forEach(b=>b.onclick=()=>{type=b.dataset.t||null;limit=30;$("types").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));run()});
+$("tips").innerHTML=TIPS.map(t=>`<button type="button">${t}</button>`).join("");
+$("tips").querySelectorAll("button").forEach(b=>b.onclick=()=>{$("q").value=b.textContent;run();$("q").focus()});
+
+function card(r,q){
+  const d=r.d, s=d.type==="sol"?"b":d.s;
+  const head=`<span class="meta"><span class="tag">${Finder.typeName(d)}</span>${Finder.subjName(d)}${d.type==="sol"?` · صفحة ${ar(d.page)}`:""}${d.type==="q"&&d.ref?` · ${Finder.esc(d.ref)}`:""}</span>`;
+  if(d.type==="lesson")return `<a class="res" data-s="${s}" href="${d.url}">${head}<b>${Finder.mark(d.title,q)}</b><p>${Finder.mark(d.text,q,220)}</p><span class="go">افتح الدرس ←</span></a>`;
+  if(d.type==="sol")return `<a class="res" data-s="${s}" href="${d.url}">${head}<b>${Finder.mark(d.title,q,200)}</b><p class="ans">${Finder.mark(d.answer,q,300)}</p><span class="go">افتح الصفحة في الكتاب ←</span></a>`;
+  return `<div class="res" data-s="${s}">${head}<b>${Finder.mark(d.title,q)}</b><p class="ans">${Finder.mark(d.answer,q)}</p><a class="go" href="${d.url}">${d.type==="num"?"احفظها بالبطاقات":"أسئلة أكثر في المادة"} ←</a></div>`;
+}
+function run(){
+  const q=$("q").value.trim();
+  history.replaceState(null,"",q?`?q=${encodeURIComponent(q)}`:location.pathname);
+  $("tips").hidden=!!q;
+  if(!ready){$("count").textContent="نجهّز البحث…";return}
+  if(!q){$("results").innerHTML="";$("count").textContent=`جاهز. ابحث في ${ar(Finder.count)} درس وسؤال وحل.`;return}
+  if(!Finder.terms(q).length){$("results").innerHTML="";$("count").textContent="اكتب كلمة أوضح.";return}
+  const all=Finder.search(q,{type,limit:200});
+  $("count").textContent=all.length?`${ar(all.length)} ${all.length>2&&all.length<11?"نتائج":"نتيجة"}`:"ما لقينا شي. جرّب كلمة ثانية، أو اكتبها بدون «ال».";
+  $("results").innerHTML=all.slice(0,limit).map(r=>card(r,q)).join("")+(all.length>limit?`<button type="button" class="btn ghost" id="more">اعرض نتائج أكثر</button>`:"");
+  if($("more"))$("more").onclick=()=>{limit+=30;run()};
+}
+let tm;$("q").addEventListener("input",()=>{clearTimeout(tm);limit=30;tm=setTimeout(run,180)});
+$("form").onsubmit=e=>{e.preventDefault();run();$("q").blur()};
+Finder.ready().then(()=>{ready=true;run()});
+if(!$("q").value)$("q").focus();
+</script>
+</body>
+</html>

@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Kufi+Arabic:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="theme.css">
 <script src="theme.js"></script>
+<script src="progress.js?v=20261014"></script>
 <style>
 /* Layout: a study binder — brand bar, a five-way switch (lessons / summaries / cards / questions / books), subject tabs, then the active view. Colors live in theme.css */
 
@@ -268,6 +269,7 @@ table.cmp.wide{min-width:560px}
 <script src="lessons.js?v=20261013"></script>
 <script src="bank_i.js?v=20261013"></script>
 <script src="lessons_i.js?v=20261013"></script>
+<script src="audio.js?v=20261014"></script>
 <script>
 const NAMES={t:"التجويد",s:"الاجتماعيات",i:"الدراسات الإسلامية"};
 const QNAMES=NAMES;
@@ -345,6 +347,7 @@ function renderLesson(i){
     <button type="button" class="back" id="lback">→ كل الدروس</button>
     <div><div class="ref">${L.unit?L.unit+" · ":""}الدرس ${ar(i+1)} من ${ar(Ls.length)} · ${L.pages}</div><h2>${L.title}</h2></div>
     ${L.html}
+    ${subj==="t"?tajweedAudio(i):""}
     <section class="lsec"><h3>تمارين الدرس</h3><div id="exs" class="lsec"></div></section>
     <section class="lsec"><h3>${subj==="i"?"صفحات الكتاب لهذا الدرس":"صفحات الملخص لهذا الدرس"}</h3><div class="thumbs${subj==="i"?" tall":""}">${L.sheets.map(p=>`<button type="button" class="thumb" data-p="${p}" aria-label="تكبير صفحة ${ar(p)}"><img src="${pageSrc(subj,p)}" ${subj==="i"?'width="1211" height="1454"':'width="1920" height="1080"'} alt="صفحة ${ar(p)} من ${subj==="i"?"كتاب":"ملخص"} ${NAMES[subj]}" loading="lazy"></button>`).join("")}</div>${subj==="i"?`<p class="ref" style="margin:0">وحلول أسئلة هذي الصفحات موجودة في <a href="books.html">الكتب المحلولة</a>.</p>`:""}</section>
     <div class="card"><b>بعد ما تخلص الدرس</b>
@@ -358,10 +361,11 @@ function renderLesson(i){
   const exHost=$("exs");
   L.ex.forEach(ex=>{const d=document.createElement("div");d.className="ex";exHost.appendChild(d);(ex.type==="order"?exOrder:exSort)(ex,d)});
   learnEl.querySelectorAll(".thumb").forEach(b=>b.onclick=()=>openLb(subj,Number(b.dataset.p)));
+  stopAudio();bindAudio(learnEl);
   $("lback").onclick=()=>{openLesson=null;renderLearn();window.scrollTo({top:0})};
   $("lquiz").onclick=()=>{quizLesson=i;qs=subj;qRun=true;go("quiz")};
   $("lcards").onclick=()=>{cardDeck=String(i);go("cards")};
-  $("ldone").onclick=()=>{const a=done[subj];const p=a.indexOf(i);p>=0?a.splice(p,1):a.push(i);saveDone();const y=p<0;const b=$("ldone");b.className="btn "+(y?"done":"ghost");b.textContent=y?"✓ خلصت الدرس":"علّم الدرس كمكتمل";$("sub-"+subj).textContent=subtitle(subj)};
+  $("ldone").onclick=()=>{const a=done[subj];const p=a.indexOf(i);p>=0?a.splice(p,1):a.push(i);Fahem.setDone(subj,i,p<0);const y=p<0;const b=$("ldone");b.className="btn "+(y?"done":"ghost");b.textContent=y?"✓ خلصت الدرس":"علّم الدرس كمكتمل";$("sub-"+subj).textContent=subtitle(subj)};
   if($("lprev"))$("lprev").onclick=()=>{openLesson=i-1;renderLearn();window.scrollTo({top:0})};
   if($("lnext"))$("lnext").onclick=()=>{openLesson=i+1;renderLearn();window.scrollTo({top:0})};
 }
@@ -377,7 +381,7 @@ function exSort(ex,host){
     const row=[...host.querySelectorAll(`.cbtn[data-i="${b.dataset.i}"]`)];
     row.forEach(x=>{x.disabled=true;if(ex.choices[x.dataset.j]===it[1])x.classList.add("ok")});
     if(pick===it[1])ok++;else b.classList.add("bad");
-    n++;upd();
+    n++;upd();Fahem.activity();
     if(n===items.length){const r=host.querySelector(".exr");r.hidden=false;r.innerHTML=`<span>${ok===n?"ممتاز! كلها صح 🎉":`خلصت التمرين: ${ar(ok)} صح من ${ar(n)}`}</span><button type="button" class="btn ghost">أعد التمرين</button>`;r.querySelector("button").onclick=()=>exSort(ex,host)}
   });
 }
@@ -388,7 +392,7 @@ function exOrder(ex,host){
     host.innerHTML=`<div class="exh"><b>تمرين: ${ex.title}</b><span class="exs">${checked?"":"اضغط بالترتيب، واضغط على أي اختيار عشان ترجّعه"}</span></div>
       <ol class="olist">${ex.items.map((_,p)=>{const v=ans[p];if(v==null)return `<li class="empty"><span>—</span></li>`;const cls=checked?(v===p?" ok":" bad"):"";return `<li><button type="button" class="obtn${cls}" data-a="${p}" ${checked?"disabled":""}>${ex.items[v]}${checked&&v!==p?`<span class="fix">الصحيح: ${ex.items[p]}</span>`:""}</button></li>`}).join("")}</ol>
       <div class="pool">${pool.filter(v=>!ans.includes(v)).map(v=>`<button type="button" class="obtn" data-v="${v}">${ex.items[v]}</button>`).join("")}</div><div class="exr" hidden></div>`;
-    host.querySelectorAll(".pool .obtn").forEach(b=>b.onclick=()=>{ans.push(Number(b.dataset.v));if(ans.length===ex.items.length)checked=true;draw()});
+    host.querySelectorAll(".pool .obtn").forEach(b=>b.onclick=()=>{ans.push(Number(b.dataset.v));if(ans.length===ex.items.length){checked=true;Fahem.activity()}draw()});
     host.querySelectorAll(".olist .obtn").forEach(b=>b.onclick=()=>{ans.splice(Number(b.dataset.a),1);draw()});
     if(checked){const ok=ans.filter((v,p)=>v===p).length;const r=host.querySelector(".exr");r.hidden=false;r.innerHTML=`<span>${ok===ans.length?"ممتاز! الترتيب صحيح 🎉":`${ar(ok)} في مكانها الصحيح من ${ar(ans.length)}`}</span><button type="button" class="btn ghost">أعد التمرين</button>`;r.querySelector("button").onclick=()=>exOrder(ex,host)}
   };draw();
@@ -425,7 +429,7 @@ function renderCard(){
   bindDeck();
   $("flash").onclick=()=>{if(showBack)return;showBack=true;renderCard();$("flash").classList.add("flip")};
   if(showBack){
-    $("cknow").onclick=()=>{CQ.shift();known++;showBack=false;renderCard()};
+    $("cknow").onclick=()=>{CQ.shift();known++;showBack=false;Fahem.activity();renderCard()};
     $("cagainone").onclick=()=>{CQ.push(CQ.shift());showBack=false;renderCard()};
   }
 }
@@ -481,7 +485,8 @@ function renderQ(){
   btns.forEach(b=>b.onclick=()=>{
     const pick=it.opts[b.dataset.i], right=pick===it.a;
     btns.forEach(x=>{x.disabled=true;if(it.opts[x.dataset.i]===it.a)x.classList.add("ok")});
-    if(right)score++;else{b.classList.add("bad");wrong.push(it)}
+    if(right)score++;else{b.classList.add("bad");wrong.push(it);Fahem.addMistake(qs,QNAMES[qs],[it.q,it.a,...it.opts.filter(o=>o!==it.a),it.ref])}
+    Fahem.activity();
     const fb=quizEl.querySelector(".fb");fb.hidden=false;
     fb.innerHTML=right?`<b class="ok">إجابة صحيحة ✓</b> <span class="ref">· راجعها في ${refWhere()} ${it.ref}</span>`:`<b class="bad">إجابة خاطئة ✗</b> الصحيح: <b>${it.a}</b> <span class="ref">· راجعها في ${refWhere()} ${it.ref}</span>`;
     quizEl.querySelector(".qhead span:last-child").textContent=`الصحيحة: ${ar(score)}`;
@@ -501,7 +506,7 @@ function renderResult(){
     <p style="margin:0">${msg}</p>
     <div class="actions"><button type="button" class="btn" id="again">أسئلة جديدة</button>${wrong.length?`<button type="button" class="btn ghost" id="retry">أعد الأسئلة الخاطئة (${ar(wrong.length)})</button>`:""}${quizLesson!=null?`<button type="button" class="btn ghost" id="tolesson">ارجع للدرس</button>`:""}</div>
   </div>
-  ${wrong.length?`<div class="card"><b>الأسئلة اللي أخطأت فيها</b><ul class="review">${wrong.map(w=>`<li>${w.q}<span>${w.a}</span><em class="ref">${w.ref}</em></li>`).join("")}</ul></div>`:""}`;
+  ${wrong.length?`<div class="card"><b>الأسئلة اللي أخطأت فيها</b><span class="ref">انحفظت في <a href="mistakes.html">دفتر أخطائي</a> عشان تراجعها بعدين.</span><ul class="review">${wrong.map(w=>`<li>${w.q}<span>${w.a}</span><em class="ref">${w.ref}</em></li>`).join("")}</ul></div>`:""}`;
   bindTop();
   $("again").onclick=quizStart;
   if($("retry"))$("retry").onclick=()=>{Q=shuffle(wrong).map(w=>({...w,opts:shuffle(w.opts)}));qi=0;score=0;wrong=[];renderQ()};
@@ -510,13 +515,14 @@ function renderResult(){
 }
 
 /* ===== البداية ===== */
-const [h,hs]=location.hash.slice(1).split("-"); /* من الصفحة الرئيسية: #learn-t ، #quiz-s ... */
+const [h,hs,hl]=location.hash.slice(1).split("-"); /* من الصفحة الرئيسية: #learn-t ، #quiz-s ، ومن البحث والخطة: #learn-t-3 (الدرس الثالث) */
 const sv=store.get("subj"), sm=store.get("mode");
 if(NAMES[sv])subj=sv; if(["learn","sum","cards","quiz"].includes(sm))mode=sm;
 const HM={learn:"learn",lessons:"learn",sum:"sum",summary:"sum",summaries:"sum",cards:"cards",quiz:"quiz",questions:"quiz"};
 if(HM[h])mode=HM[h];
 if(h==="social"||h==="s"||hs==="s")subj="s"; if(h==="tajweed"||h==="t"||hs==="t")subj="t"; if(h==="islamic"||h==="i"||hs==="i")subj="i";
 if(HM[h]==="quiz"&&QNAMES[hs])qs=hs;
+if(HM[h]==="learn"&&hl&&LESSONS[subj][Number(hl)-1])openLesson=Number(hl)-1;
 update();
 
 /* ===== عارض الصفحات ===== */

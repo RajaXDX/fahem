@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>خطة المذاكرة · فاهم</title>
+<meta name="theme-color" content="#fbf6e8">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="tools.css?v=20261014">
+<script src="theme.js"></script>
+<script src="progress.js?v=20261014"></script>
+<style>
+/* Layout: streak card (count + last two weeks), exam dates form, then the day-by-day plan starting today */
+.streak{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 16px;align-items:center}
+.flame{font-size:3rem;line-height:1;grid-row:span 2}
+.flame.off{filter:grayscale(1);opacity:.5}
+.streak h2{font-size:1.5rem!important}
+.streak p{margin:0;color:var(--muted);font-size:.92rem}
+.week{grid-column:1/-1;display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:4px;margin-top:8px}
+.day{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.7rem;color:var(--muted)}
+.day i{width:100%;max-width:26px;aspect-ratio:1;border-radius:50%;background:var(--line);display:grid;place-items:center;font-style:normal;font-size:.75rem}
+.day.on i{background:var(--butter)}
+.day.now i{outline:2px solid var(--gold);outline-offset:1px}
+.exams{display:flex;flex-direction:column;gap:8px}
+.exam{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.exam:first-child{border-top:0}
+.exam b{font-family:var(--display);font-weight:600}
+.exam small{display:block;color:var(--muted);font-size:.8rem}
+.exam input{font:inherit;font-size:.92rem;border:1.5px solid var(--line);background:var(--bg);color:var(--fg);border-radius:10px;padding:6px 8px;min-width:0;max-width:170px}
+.exam .x{appearance:none;border:0;background:none;color:var(--muted);cursor:pointer;font:inherit;padding:4px 6px;border-radius:8px}
+.exam .x:hover{color:var(--bad)}
+.days{display:flex;flex-direction:column;gap:12px}
+.dcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.dcard.today{border:2px solid var(--gold);box-shadow:0 8px 24px -14px rgb(120 90 20 / .5)}
+.dhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.dhead b{font-family:var(--display);font-size:1.05rem}
+.dhead span{font-size:.82rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.task{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start;padding:6px 0}
+.task input{width:22px;height:22px;margin:3px 0 0;accent-color:var(--ok);cursor:pointer}
+.task label{cursor:pointer;line-height:1.6}
+.task .what{display:block}
+.task.isdone .what{text-decoration:line-through;color:var(--muted)}
+.task small{display:block;font-size:.82rem;color:var(--muted)}
+.task small a{font-weight:600}
+.task.exam-day{grid-template-columns:1fr;background:var(--gold-soft);border-radius:12px;padding:10px 12px;font-weight:600}
+.note{font-size:.88rem;color:var(--muted);margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="./" aria-label="فاهم · الصفحة الرئيسية"><span class="logo-mark" aria-hidden="true">ف</span><span class="logo-word">فاهم<small>ملخصات أول متوسط</small></span></a>
+    <div class="top-end"><a class="homelink" href="./"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>الرئيسية</a><button type="button" class="themebtn" id="themebtn" aria-label="الوضع الداكن"></button></div>
+  </header>
+
+  <div class="page-head">
+    <h1>🗓️ خطة المذاكرة</h1>
+    <p>اكتب مواعيد اختباراتك، وفاهم يوزّع عليك الدروس يوم بيوم. إذا فوّت يوم أو خلّصت بدري، الخطة تتعدّل لحالها.</p>
+  </div>
+
+  <section class="card streak" id="streak" aria-label="سلسلة الأيام"></section>
+
+  <section class="card">
+    <h2>مواعيد اختباراتك</h2>
+    <div class="exams" id="exams"></div>
+  </section>
+
+  <section class="days" id="days" aria-label="الخطة"></section>
+</div>
+
+<script src="lessons.js?v=20261013"></script>
+<script src="lessons_i.js?v=20261013"></script>
+<script>
+const $=id=>document.getElementById(id);
+const ar=Fahem.ar, S=Fahem.store;
+const NAMES={t:"التجويد",s:"الاجتماعيات",i:"الدراسات الإسلامية"};
+const SUBJ=Object.keys(LESSONS).filter(k=>NAMES[k]);
+const json=(k,d)=>{try{return JSON.parse(S.get(k)||"null")??d}catch(e){return d}};
+let exams=json("exams",{}), reviews=json("planReview",{});
+const today0=()=>{const d=new Date();d.setHours(0,0,0,0);return d};
+const parse=s=>{const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)};
+const diffDays=s=>Math.round((parse(s)-today0())/864e5);
+const fmt=(d,o)=>d.toLocaleDateString("ar-SA-u-ca-gregory",o);
+const lessonsWord=n=>n===1?"درس واحد":n===2?"درسين":n<11?`${ar(n)} دروس`:`${ar(n)} درسًا`;
+
+/* ===== السلسلة ===== */
+function renderStreak(){
+  const s=Fahem.streak(), t=today0();
+  const msg=s.count?(s.today?"ذاكرت اليوم 👏 تعال بكرة عشان تكبر السلسلة.":"ما ذاكرت اليوم للحين. ذاكر أي شي عشان ما تنقطع!"):"ذاكر اليوم: اقرأ درس، أو حل أسئلة، أو راجع بطاقات، وتبدأ سلسلتك.";
+  const cells=[];for(let i=13;i>=0;i--){const d=Fahem.shift(t,-i),k=Fahem.dayKey(d);cells.push(`<span class="day${s.set[k]?" on":""}${i===0?" now":""}" title="${fmt(d,{weekday:"long",day:"numeric",month:"long"})}"><i>${s.set[k]?"🔥":""}</i>${fmt(d,{weekday:"narrow"})}</span>`)}
+  $("streak").innerHTML=`<span class="flame${s.today?"":" off"}" aria-hidden="true">🔥</span>
+    <h2>${s.count?`${s.count===1?"يوم واحد":s.count===2?"يومين":s.count<11?ar(s.count)+" أيام":ar(s.count)+" يومًا"} ورا بعض`:"ما بدأت سلسلتك"}</h2>
+    <p>${msg}${s.best>1?` · أطول سلسلة: ${ar(s.best)}`:""}</p>
+    <div class="week" aria-label="آخر أسبوعين">${cells.join("")}</div>`;
+}
+
+/* ===== مواعيد الاختبارات ===== */
+function renderExams(){
+  $("exams").innerHTML=SUBJ.map(k=>{
+    const v=exams[k]||"", d=v?diffDays(v):null;
+    const hint=v?(d<0?"خلص اختبارها 👏":d===0?"اختبارها اليوم!":d===1?"اختبارها بكرة":`باقي ${d<11?ar(d)+" أيام":ar(d)+" يومًا"}`):"ما حددت موعد";
+    return `<div class="exam"><label for="ex-${k}"><b>${NAMES[k]}</b><small>${hint}</small></label><input type="date" id="ex-${k}" value="${v}" min="${Fahem.dayKey()}" aria-label="موعد اختبار ${NAMES[k]}">${v?`<button type="button" class="x" data-k="${k}" aria-label="امسح موعد ${NAMES[k]}">✕</button>`:"<span></span>"}</div>`;
+  }).join("");
+  SUBJ.forEach(k=>$("ex-"+k).onchange=e=>{if(e.target.value)exams[k]=e.target.value;else delete exams[k];S.set("exams",JSON.stringify(exams));renderAll()});
+  $("exams").querySelectorAll(".x").forEach(b=>b.onclick=()=>{delete exams[b.dataset.k];S.set("exams",JSON.stringify(exams));renderAll()});
+}
+
+/* ===== توزيع الدروس على الأيام =====
+   لكل مادة: الأيام من اليوم لين قبل الاختبار. آخر يوم قبل الاختبار للمراجعة،
+   والدروس الباقية تتوزع بالتساوي على الأيام قبله. الدروس اللي خلصتها اليوم تبقى في خطة اليوم مشطوبة. */
+function buildPlan(){
+  const days={},put=(n,t)=>(days[n]=days[n]||[]).push(t), done=Fahem.done(), tk=Fahem.dayKey();
+  const past=[];
+  for(const k of SUBJ){
+    if(!exams[k])continue;
+    const diff=diffDays(exams[k]);
+    if(diff<0){past.push(k);continue}
+    put(diff,{kind:"exam",k});
+    if(diff===0)continue;
+    const studyDays=diff>=2?diff-1:1, reviewDay=diff-1;
+    const all=LESSONS[k].map((L,i)=>({kind:"lesson",k,i,title:L.title}));
+    const isDone=t=>(done[k]||[]).includes(t.i);
+    const doneToday=all.filter(t=>isDone(t)&&Fahem.doneAt(k,t.i)===tk);
+    const left=all.filter(t=>!isDone(t));
+    const quota=Math.ceil((left.length+doneToday.length)/studyDays);
+    const first=[...doneToday,...left.splice(0,Math.max(0,quota-doneToday.length))];
+    first.forEach(t=>put(0,t));
+    for(let d=1;d<studyDays&&left.length;d++)left.splice(0,Math.ceil(left.length/(studyDays-d))).forEach(t=>put(d,t));
+    left.forEach(t=>put(studyDays-1,t));
+    put(reviewDay,{kind:"review",k});
+  }
+  return {days,past};
+}
+function task(t,n){
+  const done=Fahem.done(), url=t.kind==="lesson"?`study.html#learn-${t.k}-${t.i+1}`:`study.html#quiz-${t.k}`;
+  if(t.kind==="exam")return `<div class="task exam-day">📝 اختبار ${NAMES[t.k]}${n===0?" اليوم. بالتوفيق! 🤲":""}</div>`;
+  const id=t.kind==="lesson"?`${t.k}-${t.i}`:`rv-${t.k}`;
+  const isd=t.kind==="lesson"?(done[t.k]||[]).includes(t.i):reviews[t.k]===exams[t.k];
+  const what=t.kind==="lesson"?`${NAMES[t.k]}: ${t.title}`:`مراجعة ${NAMES[t.k]} كاملة`;
+  const sub=t.kind==="lesson"?`<a href="${url}">افتح الدرس</a> · ثم <a href="study.html#quiz-${t.k}">اختبر نفسك</a>`:`<a href="${url}">حل كل أسئلة المادة</a> · <a href="mistakes.html">راجع دفتر أخطائي</a>`;
+  return `<div class="task${isd?" isdone":""}"><input type="checkbox" id="c-${id}" data-kind="${t.kind}" data-k="${t.k}" data-i="${t.i??""}" ${isd?"checked":""}><label for="c-${id}"><span class="what">${what}</span><small>${sub}</small></label></div>`;
+}
+const what=ts=>{const L=ts.filter(x=>x.kind==="lesson").length,R=ts.some(x=>x.kind==="review");return (L?lessonsWord(L):"")+(R?(L?" + مراجعة":"مراجعة"):"")};
+function renderPlan(){
+  const {days,past}=buildPlan(), keys=Object.keys(days).map(Number).sort((a,b)=>a-b), t=today0();
+  if(!Object.keys(exams).length){
+    $("days").innerHTML=`<div class="card empty"><b>حدد موعد اختبار واحد على الأقل</b>وبعدها تطلع لك خطتك يوم بيوم هنا.</div>`;return;
+  }
+  const label=n=>n===0?"اليوم":n===1?"بكرة":fmt(Fahem.shift(t,n),{weekday:"long"});
+  let html=past.length?`<p class="note">${past.map(k=>NAMES[k]).join("، ")}: خلص اختبارها 👏</p>`:"";
+  if(!keys.length)html+=`<div class="card empty"><b>ما فيه شي في خطتك</b>مواعيد اختباراتك كلها راحت.</div>`;
+  for(const n of keys){
+    const list=days[n], lessons=list.filter(x=>x.kind!=="exam");
+    const fin=lessons.filter(x=>x.kind==="lesson"?(Fahem.done()[x.k]||[]).includes(x.i):reviews[x.k]===exams[x.k]).length;
+    html+=`<article class="dcard${n===0?" today":""}">
+      <div class="dhead"><b>${label(n)}</b><span>${fmt(Fahem.shift(t,n),{day:"numeric",month:"long"})}${lessons.length?` · ${n===0?`خلصت ${ar(fin)} من ${ar(lessons.length)}`:what(lessons)}`:""}</span></div>
+      ${n===0&&lessons.length&&fin===lessons.length?`<p class="note">خلصت خطة اليوم كلها 🎉 ارتاح أو تقدّم على بكرة.</p>`:""}
+      ${list.map(x=>task(x,n)).join("")}
+    </article>`;
+  }
+  $("days").innerHTML=html;
+  $("days").querySelectorAll("input[type=checkbox]").forEach(c=>c.onchange=()=>{
+    if(c.dataset.kind==="lesson")Fahem.setDone(c.dataset.k,Number(c.dataset.i),c.checked);
+    else{if(c.checked){reviews[c.dataset.k]=exams[c.dataset.k];Fahem.activity()}else delete reviews[c.dataset.k];S.set("planReview",JSON.stringify(reviews))}
+    renderAll();
+  });
+}
+function renderAll(){renderStreak();renderExams();renderPlan()}
+renderAll();
+/* لو رجع للصفحة من درس خلّصه، نحدّثها */
+addEventListener("pageshow",e=>{if(e.persisted)renderAll()});
+</script>
+</body>
+</html>

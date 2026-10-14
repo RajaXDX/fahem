@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@700&family=Noto+Kufi+Arabic:wght@600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="theme.css">
 <script src="theme.js"></script>
+<script src="progress.js?v=20261014"></script>
 <style>
 *{box-sizing:border-box}html,body{margin:0}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.75}
@@ -232,7 +233,10 @@ $("prev").onclick=()=>{page--;render();scrollTo({top:0})};
 $("next").onclick=()=>{page++;render();scrollTo({top:0})};
 $("num").onchange=()=>{page=Number($("num").value)||1;render()};
 $("jump").onchange=()=>{if($("jump").value){page=Number($("jump").value);render();scrollTo({top:0})}};
-renderSetup();
+/* رابط مباشر لصفحة: books.html#e-16 (من البحث واسأل فاهم) */
+const hm=location.hash.match(/^#(\w+)-(\d+)$/);
+if(hm&&N[hm[1]]){book=hm[1];page=Number(hm[2]);solved=true;$("setup").hidden=true;$("viewer").hidden=false;render()}
+else renderSetup();
 </script>
 </body>
 </html>
