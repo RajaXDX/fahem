@@ -61,6 +61,11 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 .ans:hover,.ans[aria-expanded="true"]{background:rgb(246 200 68 / .28)}
 .pop{position:absolute;inset-inline:3%;z-index:3;background:var(--surface);color:var(--fg);border:1.5px solid var(--acc);border-radius:12px;padding:10px 14px;box-shadow:0 10px 24px -8px rgb(0 0 0 / .35);font-size:1rem;line-height:1.7}
 .pop small{display:block;color:var(--muted);font-size:.8rem}
+.sol{background:var(--surface);border:1.5px solid var(--ok);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.sol[hidden]{display:none}
+.sol h2{font-family:var(--display);font-size:1rem;margin:0;color:var(--ok)}
+.q{font-weight:600}
+.a{white-space:pre-line;background:var(--ok-soft);border-radius:10px;padding:8px 12px;margin-top:4px}
 .pop b{display:block;white-space:pre-line;color:var(--acc)}
 </style>
 </head>
@@ -95,13 +100,16 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
       <p class="hint" id="hint" aria-live="polite"></p>
     </div>
     <div class="pg" id="pg"><img id="img" alt="" width="1211" height="1454"></div>
+    <section class="sol" id="sol" hidden></section>
   </section>
 </div>
 <script>const SOL={e:{},i:{}};</script>
-<script src="sol/e1.js"></script><script src="sol/e2.js"></script><script src="sol/e3.js"></script>
-<script src="sol/e4a.js"></script><script src="sol/e4b.js"></script><script src="sol/e5.js"></script>
-<script src="sol/e6.js"></script><script src="sol/e7.js"></script><script src="sol/e8.js"></script>
-<script src="sol/i1.js"></script><script src="sol/i2.js"></script><script src="sol/i3.js"></script>
+<script src="sol/e1.js?v=20261014"></script><script src="sol/e2.js?v=20261014"></script><script src="sol/e3.js?v=20261014"></script>
+<script src="sol/e4a.js?v=20261014"></script><script src="sol/e4b.js?v=20261014"></script><script src="sol/e5.js?v=20261014"></script>
+<script src="sol/e6.js?v=20261014"></script><script src="sol/e7.js?v=20261014"></script><script src="sol/e8.js?v=20261014"></script>
+<script src="sol/i1.js?v=20261014"></script><script src="sol/i2.js?v=20261014"></script><script src="sol/i3.js?v=20261014"></script><script src="sol/i4.js?v=20261014"></script>
+<script src="sol/i5.js?v=20261014"></script><script src="sol/i6.js?v=20261014"></script><script src="sol/i7.js?v=20261014"></script>
+<script src="sol/i8.js?v=20261014"></script><script src="sol/i9.js?v=20261014"></script><script src="sol/i10.js?v=20261014"></script>
 <script>
 const N={e:258,i:246},NAME={e:"الاجتماعيات",i:"الدراسات الإسلامية"};
 /* بداية كل وحدة أو قسم (رقم الصفحة في الكتاب) */
@@ -151,10 +159,13 @@ function render(){
   $("num").value=page;$("num").max=N[book];$("of").textContent=`من ${ar(N[book])}`;
   const list=SOL[book][page], keys=Object.keys(SOL[book]).map(Number).sort((a,b)=>a-b);
   $("jump").innerHTML=`<option value="">صفحات فيها حلول (${ar(keys.length)})</option>`+keys.map(k=>`<option value="${k}" ${k===page?"selected":""}>صفحة ${ar(k)}</option>`).join("");
-  const pending=book==="i"&&page>154;
-  $("hint").textContent=!list?(pending?"حلول هذا الجزء من الكتاب ما انضافت للحين.":"ما فيه أسئلة في هذه الصفحة. استخدم قائمة «صفحات فيها حلول» للتنقل.")
-    :solved?"الحلول مكتوبة بالأزرق على الصفحة. اضغط على أي حل عشان تكبّره.":"الحلول مخفية. اختر «محلول» عشان تطلع على الصفحة.";
+  $("hint").textContent=!list?"ما فيه أسئلة في هذه الصفحة. استخدم قائمة «صفحات فيها حلول» للتنقل."
+    :solved?(list.some(([,a,b])=>Array.isArray(a)||b)?"الحلول مكتوبة بالأزرق على الصفحة. اضغط على أي حل عشان تكبّره.":"حلول هذه الصفحة تحتها."):"الحلول مخفية. اختر «محلول» عشان تطلع على الصفحة.";
   drawAnswers(solved&&list?list:[]);
+  /* الحلول اللي ما انحدد مكانها على الصفحة للحين تطلع تحت الصفحة */
+  const rest=solved&&list?list.filter(([,a,b])=>!Array.isArray(a)&&!b):[], s=$("sol");
+  s.hidden=!rest.length;
+  s.innerHTML=rest.length?`<h2>حلول هذه الصفحة</h2>`+rest.map(([q,a])=>`<div><div class="q">${esc(q)}</div><div class="a">${esc(a)}</div></div>`).join(""):"";
   st.set("bm",solved?"1":"0");st.set("bp_"+book,page);
 }
 
