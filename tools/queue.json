@@ -1,0 +1,123 @@
+{
+  "_note": "طابور المهمة المجدولة hourly-book-and-summary: كل ساعة تاخذ أول عنصر حالته todo. status: todo | in_progress | done | blocked",
+  "items": [
+    {
+      "subject": "المهارات الرقمية",
+      "keys": [
+        "d"
+      ],
+      "books": [
+        "المهارات الرقمية أول متوسط (الجزأين في كتاب واحد)"
+      ],
+      "need_download": true,
+      "status": "done",
+      "started": "2026-10-15T16:10:00+03:00",
+      "finished": "2026-10-15T17:30:00+03:00",
+      "note": "كتاب واحد فيه الفصلين (٣٥٨ صفحة) · ٢٦ درسًا · ٢٣٢ سؤالًا"
+    },
+    {
+      "subject": "اللغة الإنجليزية",
+      "keys": [
+        "en1",
+        "en2"
+      ],
+      "books": [
+        "Super Goal 1 Student's Book Term 1",
+        "Super Goal 1 Student's Book Term 2"
+      ],
+      "need_download": true,
+      "status": "todo"
+    },
+    {
+      "subject": "الرياضيات",
+      "keys": [
+        "m1",
+        "m2"
+      ],
+      "books": [],
+      "need_download": false,
+      "status": "todo"
+    },
+    {
+      "subject": "لغتي الخالدة",
+      "keys": [
+        "l1",
+        "l2"
+      ],
+      "books": [
+        "لغتي الخالدة أول متوسط الجزء الثاني"
+      ],
+      "need_download": true,
+      "status": "todo"
+    },
+    {
+      "subject": "العلوم",
+      "keys": [
+        "c1",
+        "c2"
+      ],
+      "books": [],
+      "need_download": false,
+      "status": "todo"
+    },
+    {
+      "subject": "الدراسات الإسلامية",
+      "keys": [
+        "i",
+        "i2"
+      ],
+      "books": [
+        "الدراسات الإسلامية أول متوسط الفصل الثاني"
+      ],
+      "need_download": true,
+      "status": "todo"
+    },
+    {
+      "subject": "الاجتماعيات",
+      "keys": [
+        "e",
+        "e2"
+      ],
+      "books": [
+        "الدراسات الاجتماعية والمواطنة أول متوسط الفصل الثاني"
+      ],
+      "need_download": true,
+      "status": "todo"
+    },
+    {
+      "subject": "التفكير الناقد",
+      "keys": [
+        "tf"
+      ],
+      "books": [
+        "التفكير الناقد أول متوسط"
+      ],
+      "need_download": true,
+      "status": "todo"
+    },
+    {
+      "subject": "التربية الفنية",
+      "keys": [
+        "a1",
+        "a2"
+      ],
+      "books": [
+        "التربية الفنية أول متوسط الفصل الأول",
+        "التربية الفنية أول متوسط الفصل الثاني"
+      ],
+      "need_download": true,
+      "status": "todo"
+    },
+    {
+      "subject": "التربية البدنية والدفاع عن النفس",
+      "keys": [
+        "pe"
+      ],
+      "books": [
+        "التربية البدنية والدفاع عن النفس أول متوسط"
+      ],
+      "need_download": true,
+      "status": "todo"
+    }
+  ]
+}

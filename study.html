@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>المذاكرة · فاهم</title>
-<meta name="description" content="فاهم: دروس مشروحة وتمارين وبطاقات حفظ وأسئلة في التجويد والاجتماعيات والدراسات الإسلامية للصف الأول المتوسط.">
+<meta name="description" content="فاهم: دروس مشروحة وتمارين وبطاقات حفظ وأسئلة في التجويد والاجتماعيات والدراسات الإسلامية والمهارات الرقمية للصف الأول المتوسط.">
 <meta name="theme-color" content="#fbf6e8">
 <meta property="og:title" content="فاهم · ذاكر، وصِر فاهم">
 <meta property="og:description" content="ملخصات ودروس وأسئلة للصف الأول المتوسط.">
@@ -26,8 +26,9 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .wrap{max-width:1100px;margin:0 auto;padding-inline:16px;padding-block:28px 56px;display:flex;flex-direction:column;gap:20px;--acc:var(--gold);--acc-soft:var(--gold-soft)}
 .wrap[data-s="t"]{--acc:var(--tajweed);--acc-soft:var(--tajweed-soft)}
 .wrap[data-s="s"]{--acc:var(--social);--acc-soft:var(--social-soft)}
+.wrap[data-s="d"]{--acc:var(--digital);--acc-soft:var(--digital-soft)}
 
-.tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px}
+.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px}
 .tab{appearance:none;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:12px;padding:12px 14px;font:inherit;text-align:right;cursor:pointer;display:flex;flex-direction:column;gap:2px;min-width:0}
 .tab b{font-family:var(--display);font-size:1.05rem;font-weight:700}
 .tab span{font-size:.82rem;color:var(--muted)}
@@ -37,6 +38,9 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .tab[data-s="s"][aria-selected="true"] b{color:var(--social)}
 .tab[data-s="i"][aria-selected="true"]{border-color:var(--gold);background:var(--gold-soft)}
 .tab[data-s="i"][aria-selected="true"] b{color:var(--gold)}
+.tab[data-s="d"][aria-selected="true"]{border-color:var(--digital);background:var(--digital-soft)}
+.tab[data-s="d"][aria-selected="true"] b{color:var(--digital)}
+@media (max-width:600px){.tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:480px){.tabs{gap:6px}.tab{padding:10px}.tab b{font-size:.95rem}.tab span{font-size:.72rem}}
 .thumbs.tall .thumb img{aspect-ratio:auto}
 
@@ -87,6 +91,8 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:10px}
 .tip{background:var(--gold-soft);border-radius:12px;padding:10px 14px;font-size:.95rem}
 .tip>b:first-child{color:var(--gold)}
+/* أكواد بايثون وصيغ إكسل: من اليسار لليمين */
+.code{direction:ltr;text-align:left;unicode-bidi:plaintext;font-family:Consolas,"Courier New",monospace;font-size:.9rem;line-height:1.6;background:var(--acc-soft);border-radius:10px;padding:10px 14px;margin:0;overflow-x:auto;white-space:pre}
 .warn{color:var(--bad)}
 .steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;counter-reset:st}
 .steps li{counter-increment:st;display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:start}
@@ -192,7 +198,8 @@ table.cmp.wide{min-width:560px}
 .spick[data-q="s"][aria-pressed="true"] b{color:var(--social)}
 .spick[data-q="i"][aria-pressed="true"]{border-color:var(--gold);background:var(--gold-soft)}
 .spick[data-q="i"][aria-pressed="true"] b{color:var(--gold)}
-.subjpick .spick[data-q="i"]{grid-column:1/-1}
+.spick[data-q="d"][aria-pressed="true"]{border-color:var(--digital);background:var(--digital-soft)}
+.spick[data-q="d"][aria-pressed="true"] b{color:var(--digital)}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .q{font-family:var(--display);font-size:1.15rem;line-height:1.7;margin:0;text-wrap:balance}
 .opts{display:grid;gap:10px}
@@ -240,12 +247,14 @@ table.cmp.wide{min-width:560px}
     <button class="tab" role="tab" data-s="t" aria-selected="true"><b>التجويد</b><span id="sub-t"></span></button>
     <button class="tab" role="tab" data-s="s" aria-selected="false"><b>الاجتماعيات</b><span id="sub-s"></span></button>
     <button class="tab" role="tab" data-s="i" aria-selected="false"><b>الإسلامية</b><span id="sub-i"></span></button>
+    <button class="tab" role="tab" data-s="d" aria-selected="false"><b>المهارات الرقمية</b><span id="sub-d"></span></button>
   </div>
 
   <section class="learn" id="learn"></section>
   <section class="panel" id="panel-t" hidden></section>
   <section class="panel" id="panel-s" hidden></section>
   <section class="panel" id="panel-i" hidden></section>
+  <section class="panel" id="panel-d" hidden></section>
   <section class="cards" id="cards" hidden></section>
   <section class="quiz" id="quiz" hidden></section>
 
@@ -269,14 +278,16 @@ table.cmp.wide{min-width:560px}
 <script src="lessons.js?v=20261013"></script>
 <script src="bank_i.js?v=20261013"></script>
 <script src="lessons_i.js?v=20261013"></script>
+<script src="bank_d.js?v=20261015"></script>
+<script src="lessons_d.js?v=20261015"></script>
 <script src="audio.js?v=20261014"></script>
 <script>
-const NAMES={t:"التجويد",s:"الاجتماعيات",i:"الدراسات الإسلامية"};
+const NAMES={t:"التجويد",s:"الاجتماعيات",i:"الدراسات الإسلامية",d:"المهارات الرقمية"};
 const QNAMES=NAMES;
 const qParts=k=>LESSONS[k].map(L=>L.title);
-/* الإسلامية ما لها ملخص؛ صفحاتها من الكتاب نفسه (b/i) */
-const COUNT={t:10,s:16,i:246};
-const pageSrc=(k,p)=>k==="i"?`b/i/${String(p).padStart(3,"0")}.webp`:`${k}/${String(p).padStart(2,"0")}.jpg`;
+/* الإسلامية والمهارات الرقمية ما لها ملخص؛ صفحاتها من الكتاب نفسه (b/i و b/d) */
+const COUNT={t:10,s:16,i:246,d:358};
+const pageSrc=(k,p)=>k==="i"||k==="d"?`b/${k}/${String(p).padStart(3,"0")}.webp`:`${k}/${String(p).padStart(2,"0")}.jpg`;
 const ar=n=>n.toLocaleString("ar-SA");
 const pad=n=>String(n).padStart(2,"0");
 const $=id=>document.getElementById(id);
@@ -285,6 +296,7 @@ const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math
 const bankOf=(k,lesson)=>BANK[k].map((r,i)=>({r,i})).filter(x=>lesson==null||LESSON_OF[k](x.i)===lesson).map(x=>x.r);
 let done={t:[],s:[],i:[]};try{const d=JSON.parse(store.get("done")||"null");if(d&&d.t&&d.s)done=d}catch(e){}
 if(!done.i)done.i=[];
+if(!done.d)done.d=[];
 const saveDone=()=>store.set("done",JSON.stringify(done));
 
 let mode="learn", subj="t", openLesson=null, quizLesson=null, cardDeck="all";
@@ -318,6 +330,7 @@ modes.forEach(b=>b.onclick=()=>{quizLesson=null;if(b.dataset.m==="quiz"){qs=null
 for(const k of Object.keys(NAMES)){
   const panel=$("panel-"+k);
   if(k==="i"){panel.innerHTML=`<div class="card"><b>ملخص الدراسات الإسلامية</b><p style="margin:0">ما فيه ملخص PDF لهذي المادة، لكن الكتاب كامل موجود محلول صفحة صفحة في قسم «الكتب»، وكل درس في قسم «الدروس» مشروح وتحته صفحاته من الكتاب.</p><div class="actions"><a class="btn" href="books.html" style="text-decoration:none">افتح الكتاب المحلول</a><button type="button" class="btn ghost" id="sum-i-learn">روح للدروس</button></div></div>`;panel.querySelector("#sum-i-learn").onclick=()=>go("learn");continue}
+  if(k==="d"){panel.innerHTML=`<div class="card"><b>ملخص المهارات الرقمية</b><p style="margin:0">ما فيه ملخص PDF لهذي المادة، لكن الكتاب كامل (الفصلين) موجود في قسم «الكتب»، وكل درس في قسم «الدروس» مشروح وتحته صفحاته من الكتاب.</p><div class="actions"><a class="btn" href="books.html" style="text-decoration:none">افتح الكتاب</a><button type="button" class="btn ghost" id="sum-d-learn">روح للدروس</button></div></div>`;panel.querySelector("#sum-d-learn").onclick=()=>go("learn");continue}
   for(let i=1;i<=COUNT[k];i++){
     const fig=document.createElement("figure");fig.className="sheet";
     fig.innerHTML=`<button type="button" aria-label="تكبير صفحة ${ar(i)} من ${NAMES[k]}"><img src="${k}/${pad(i)}.jpg" width="1920" height="1080" alt="${NAMES[k]} – صفحة ${ar(i)}" loading="lazy"></button><figcaption>صفحة ${ar(i)} من ${ar(COUNT[k])}</figcaption>`;
@@ -349,7 +362,7 @@ function renderLesson(i){
     ${L.html}
     ${subj==="t"?tajweedAudio(i):""}
     <section class="lsec"><h3>تمارين الدرس</h3><div id="exs" class="lsec"></div></section>
-    <section class="lsec"><h3>${subj==="i"?"صفحات الكتاب لهذا الدرس":"صفحات الملخص لهذا الدرس"}</h3><div class="thumbs${subj==="i"?" tall":""}">${L.sheets.map(p=>`<button type="button" class="thumb" data-p="${p}" aria-label="تكبير صفحة ${ar(p)}"><img src="${pageSrc(subj,p)}" ${subj==="i"?'width="1211" height="1454"':'width="1920" height="1080"'} alt="صفحة ${ar(p)} من ${subj==="i"?"كتاب":"ملخص"} ${NAMES[subj]}" loading="lazy"></button>`).join("")}</div>${subj==="i"?`<p class="ref" style="margin:0">وحلول أسئلة هذي الصفحات موجودة في <a href="books.html">الكتب المحلولة</a>.</p>`:""}</section>
+    <section class="lsec"><h3>${subj==="i"||subj==="d"?"صفحات الكتاب لهذا الدرس":"صفحات الملخص لهذا الدرس"}</h3><div class="thumbs${subj==="i"||subj==="d"?" tall":""}">${L.sheets.map(p=>`<button type="button" class="thumb" data-p="${p}" aria-label="تكبير صفحة ${ar(p)}"><img src="${pageSrc(subj,p)}" ${subj==="i"||subj==="d"?'width="1211" height="1454"':'width="1920" height="1080"'} alt="صفحة ${ar(p)} من ${subj==="i"||subj==="d"?"كتاب":"ملخص"} ${NAMES[subj]}" loading="lazy"></button>`).join("")}</div>${subj==="i"?`<p class="ref" style="margin:0">وحلول أسئلة هذي الصفحات موجودة في <a href="books.html">الكتب المحلولة</a>.</p>`:subj==="d"?`<p class="ref" style="margin:0">والكتاب كامل موجود في <a href="books.html">الكتب</a>.</p>`:""}</section>
     <div class="card"><b>بعد ما تخلص الدرس</b>
       <div class="actions">
         <button type="button" class="btn" id="lquiz">اختبر نفسك في الدرس (${ar(bankOf(subj,i).length)} سؤال)</button>
@@ -520,7 +533,7 @@ const sv=store.get("subj"), sm=store.get("mode");
 if(NAMES[sv])subj=sv; if(["learn","sum","cards","quiz"].includes(sm))mode=sm;
 const HM={learn:"learn",lessons:"learn",sum:"sum",summary:"sum",summaries:"sum",cards:"cards",quiz:"quiz",questions:"quiz"};
 if(HM[h])mode=HM[h];
-if(h==="social"||h==="s"||hs==="s")subj="s"; if(h==="tajweed"||h==="t"||hs==="t")subj="t"; if(h==="islamic"||h==="i"||hs==="i")subj="i";
+if(h==="social"||h==="s"||hs==="s")subj="s"; if(h==="tajweed"||h==="t"||hs==="t")subj="t"; if(h==="islamic"||h==="i"||hs==="i")subj="i"; if(h==="digital"||h==="d"||hs==="d")subj="d";
 if(HM[h]==="quiz"&&QNAMES[hs])qs=hs;
 if(HM[h]==="learn"&&hl&&LESSONS[subj][Number(hl)-1])openLesson=Number(hl)-1;
 update();

@@ -73,10 +73,11 @@
 
 <script src="lessons.js?v=20261013"></script>
 <script src="lessons_i.js?v=20261013"></script>
+<script src="lessons_d.js?v=20261015"></script>
 <script>
 const $=id=>document.getElementById(id);
 const ar=Fahem.ar, S=Fahem.store;
-const NAMES={t:"التجويد",s:"الاجتماعيات",i:"الدراسات الإسلامية"};
+const NAMES={t:"التجويد",s:"الاجتماعيات",i:"الدراسات الإسلامية",d:"المهارات الرقمية"};
 const SUBJ=Object.keys(LESSONS).filter(k=>NAMES[k]);
 const json=(k,d)=>{try{return JSON.parse(S.get(k)||"null")??d}catch(e){return d}};
 let exams=json("exams",{}), reviews=json("planReview",{});
