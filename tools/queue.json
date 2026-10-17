@@ -18,15 +18,17 @@
     {
       "subject": "اللغة الإنجليزية",
       "keys": [
-        "en1",
-        "en2"
+        "en"
       ],
       "books": [
         "Super Goal 1 Student's Book Term 1",
         "Super Goal 1 Student's Book Term 2"
       ],
       "need_download": true,
-      "status": "todo"
+      "status": "done",
+      "started": "2026-10-17T15:55:00+03:00",
+      "finished": "2026-10-17T16:10:00+03:00",
+      "note": "كتاب واحد Super Goal 1 فيه الفصلين وكتاب التمارين (٢٧٢ صفحة) · ٢٠ درسًا · ١٩٤ سؤالًا"
     },
     {
       "subject": "الرياضيات",

@@ -27,8 +27,9 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .wrap[data-s="t"]{--acc:var(--tajweed);--acc-soft:var(--tajweed-soft)}
 .wrap[data-s="s"]{--acc:var(--social);--acc-soft:var(--social-soft)}
 .wrap[data-s="d"]{--acc:var(--digital);--acc-soft:var(--digital-soft)}
+.wrap[data-s="en"]{--acc:var(--english);--acc-soft:var(--english-soft)}
 
-.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px}
+.tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px}
 .tab{appearance:none;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:12px;padding:12px 14px;font:inherit;text-align:right;cursor:pointer;display:flex;flex-direction:column;gap:2px;min-width:0}
 .tab b{font-family:var(--display);font-size:1.05rem;font-weight:700}
 .tab span{font-size:.82rem;color:var(--muted)}
@@ -40,7 +41,9 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .tab[data-s="i"][aria-selected="true"] b{color:var(--gold)}
 .tab[data-s="d"][aria-selected="true"]{border-color:var(--digital);background:var(--digital-soft)}
 .tab[data-s="d"][aria-selected="true"] b{color:var(--digital)}
-@media (max-width:600px){.tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tab[data-s="en"][aria-selected="true"]{border-color:var(--english);background:var(--english-soft)}
+.tab[data-s="en"][aria-selected="true"] b{color:var(--english)}
+@media (max-width:760px){.tabs{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:480px){.tabs{gap:6px}.tab{padding:10px}.tab b{font-size:.95rem}.tab span{font-size:.72rem}}
 .thumbs.tall .thumb img{aspect-ratio:auto}
 
@@ -200,6 +203,8 @@ table.cmp.wide{min-width:560px}
 .spick[data-q="i"][aria-pressed="true"] b{color:var(--gold)}
 .spick[data-q="d"][aria-pressed="true"]{border-color:var(--digital);background:var(--digital-soft)}
 .spick[data-q="d"][aria-pressed="true"] b{color:var(--digital)}
+.spick[data-q="en"][aria-pressed="true"]{border-color:var(--english);background:var(--english-soft)}
+.spick[data-q="en"][aria-pressed="true"] b{color:var(--english)}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .q{font-family:var(--display);font-size:1.15rem;line-height:1.7;margin:0;text-wrap:balance}
 .opts{display:grid;gap:10px}
@@ -248,6 +253,7 @@ table.cmp.wide{min-width:560px}
     <button class="tab" role="tab" data-s="s" aria-selected="false"><b>الاجتماعيات</b><span id="sub-s"></span></button>
     <button class="tab" role="tab" data-s="i" aria-selected="false"><b>الإسلامية</b><span id="sub-i"></span></button>
     <button class="tab" role="tab" data-s="d" aria-selected="false"><b>المهارات الرقمية</b><span id="sub-d"></span></button>
+    <button class="tab" role="tab" data-s="en" aria-selected="false"><b>الإنجليزي</b><span id="sub-en"></span></button>
   </div>
 
   <section class="learn" id="learn"></section>
@@ -255,6 +261,7 @@ table.cmp.wide{min-width:560px}
   <section class="panel" id="panel-s" hidden></section>
   <section class="panel" id="panel-i" hidden></section>
   <section class="panel" id="panel-d" hidden></section>
+  <section class="panel" id="panel-en" hidden></section>
   <section class="cards" id="cards" hidden></section>
   <section class="quiz" id="quiz" hidden></section>
 
@@ -280,14 +287,17 @@ table.cmp.wide{min-width:560px}
 <script src="lessons_i.js?v=20261013"></script>
 <script src="bank_d.js?v=20261015"></script>
 <script src="lessons_d.js?v=20261015"></script>
+<script src="bank_en.js?v=20261016"></script>
+<script src="lessons_en.js?v=20261016"></script>
 <script src="audio.js?v=20261014"></script>
 <script>
-const NAMES={t:"التجويد",s:"الاجتماعيات",i:"الدراسات الإسلامية",d:"المهارات الرقمية"};
+const NAMES={t:"التجويد",s:"الاجتماعيات",i:"الدراسات الإسلامية",d:"المهارات الرقمية",en:"اللغة الإنجليزية"};
 const QNAMES=NAMES;
 const qParts=k=>LESSONS[k].map(L=>L.title);
-/* الإسلامية والمهارات الرقمية ما لها ملخص؛ صفحاتها من الكتاب نفسه (b/i و b/d) */
-const COUNT={t:10,s:16,i:246,d:358};
-const pageSrc=(k,p)=>k==="i"||k==="d"?`b/${k}/${String(p).padStart(3,"0")}.webp`:`${k}/${String(p).padStart(2,"0")}.jpg`;
+/* الإسلامية والمهارات الرقمية والإنجليزي ما لها ملخص؛ صفحاتها من الكتاب نفسه (b/i و b/d و b/en) */
+const COUNT={t:10,s:16,i:246,d:358,en:272};
+const BOOK_H={i:1454,d:1454,en:1535}; /* ارتفاع صفحات الكتب (العرض ١٢١١) */
+const pageSrc=(k,p)=>BOOK_H[k]?`b/${k}/${String(p).padStart(3,"0")}.webp`:`${k}/${String(p).padStart(2,"0")}.jpg`;
 const ar=n=>n.toLocaleString("ar-SA");
 const pad=n=>String(n).padStart(2,"0");
 const $=id=>document.getElementById(id);
@@ -297,6 +307,7 @@ const bankOf=(k,lesson)=>BANK[k].map((r,i)=>({r,i})).filter(x=>lesson==null||LES
 let done={t:[],s:[],i:[]};try{const d=JSON.parse(store.get("done")||"null");if(d&&d.t&&d.s)done=d}catch(e){}
 if(!done.i)done.i=[];
 if(!done.d)done.d=[];
+if(!done.en)done.en=[];
 const saveDone=()=>store.set("done",JSON.stringify(done));
 
 let mode="learn", subj="t", openLesson=null, quizLesson=null, cardDeck="all";
@@ -306,7 +317,7 @@ const tabs=[...document.querySelectorAll(".tab")], modes=[...document.querySelec
 function subtitle(k){
   const L=LESSONS[k].length;
   if(mode==="learn")return `${ar(L)} ${L>2&&L<11?"دروس":L>10?"درسًا":"درس"} · خلصت ${ar(done[k].length)}`;
-  if(mode==="sum")return k==="t"?"من ص ٩ إلى ص ٢٦ · ١٠ صفحات":k==="s"?"من ص ١٢ إلى ص ٦١ · ١٦ صفحة":"الكتاب المحلول";
+  if(mode==="sum")return k==="t"?"من ص ٩ إلى ص ٢٦ · ١٠ صفحات":k==="s"?"من ص ١٢ إلى ص ٦١ · ١٦ صفحة":k==="en"?"الكتاب كامل":"الكتاب المحلول";
   if(mode==="cards")return `${ar(BANK[k].length+(k==="s"?NUMS.length:0))} بطاقة`;
   return `${ar(BANK[k].length)} سؤالًا`;
 }
@@ -331,6 +342,7 @@ for(const k of Object.keys(NAMES)){
   const panel=$("panel-"+k);
   if(k==="i"){panel.innerHTML=`<div class="card"><b>ملخص الدراسات الإسلامية</b><p style="margin:0">ما فيه ملخص PDF لهذي المادة، لكن الكتاب كامل موجود محلول صفحة صفحة في قسم «الكتب»، وكل درس في قسم «الدروس» مشروح وتحته صفحاته من الكتاب.</p><div class="actions"><a class="btn" href="books.html" style="text-decoration:none">افتح الكتاب المحلول</a><button type="button" class="btn ghost" id="sum-i-learn">روح للدروس</button></div></div>`;panel.querySelector("#sum-i-learn").onclick=()=>go("learn");continue}
   if(k==="d"){panel.innerHTML=`<div class="card"><b>ملخص المهارات الرقمية</b><p style="margin:0">ما فيه ملخص PDF لهذي المادة، لكن الكتاب كامل (الفصلين) موجود في قسم «الكتب»، وكل درس في قسم «الدروس» مشروح وتحته صفحاته من الكتاب.</p><div class="actions"><a class="btn" href="books.html" style="text-decoration:none">افتح الكتاب</a><button type="button" class="btn ghost" id="sum-d-learn">روح للدروس</button></div></div>`;panel.querySelector("#sum-d-learn").onclick=()=>go("learn");continue}
+  if(k==="en"){panel.innerHTML=`<div class="card"><b>ملخص اللغة الإنجليزية</b><p style="margin:0">ما فيه ملخص PDF لهذي المادة، لكن كتاب Super Goal 1 كامل (الفصلين مع كتاب التمارين) موجود في قسم «الكتب»، وكل وحدة في قسم «الدروس» مشروحة بالعربي وتحتها صفحاتها من الكتاب.</p><div class="actions"><a class="btn" href="books.html" style="text-decoration:none">افتح الكتاب</a><button type="button" class="btn ghost" id="sum-en-learn">روح للدروس</button></div></div>`;panel.querySelector("#sum-en-learn").onclick=()=>go("learn");continue}
   for(let i=1;i<=COUNT[k];i++){
     const fig=document.createElement("figure");fig.className="sheet";
     fig.innerHTML=`<button type="button" aria-label="تكبير صفحة ${ar(i)} من ${NAMES[k]}"><img src="${k}/${pad(i)}.jpg" width="1920" height="1080" alt="${NAMES[k]} – صفحة ${ar(i)}" loading="lazy"></button><figcaption>صفحة ${ar(i)} من ${ar(COUNT[k])}</figcaption>`;
@@ -362,7 +374,7 @@ function renderLesson(i){
     ${L.html}
     ${subj==="t"?tajweedAudio(i):""}
     <section class="lsec"><h3>تمارين الدرس</h3><div id="exs" class="lsec"></div></section>
-    <section class="lsec"><h3>${subj==="i"||subj==="d"?"صفحات الكتاب لهذا الدرس":"صفحات الملخص لهذا الدرس"}</h3><div class="thumbs${subj==="i"||subj==="d"?" tall":""}">${L.sheets.map(p=>`<button type="button" class="thumb" data-p="${p}" aria-label="تكبير صفحة ${ar(p)}"><img src="${pageSrc(subj,p)}" ${subj==="i"||subj==="d"?'width="1211" height="1454"':'width="1920" height="1080"'} alt="صفحة ${ar(p)} من ${subj==="i"||subj==="d"?"كتاب":"ملخص"} ${NAMES[subj]}" loading="lazy"></button>`).join("")}</div>${subj==="i"?`<p class="ref" style="margin:0">وحلول أسئلة هذي الصفحات موجودة في <a href="books.html">الكتب المحلولة</a>.</p>`:subj==="d"?`<p class="ref" style="margin:0">والكتاب كامل موجود في <a href="books.html">الكتب</a>.</p>`:""}</section>
+    <section class="lsec"><h3>${BOOK_H[subj]?"صفحات الكتاب لهذا الدرس":"صفحات الملخص لهذا الدرس"}</h3><div class="thumbs${BOOK_H[subj]?" tall":""}">${L.sheets.map(p=>`<button type="button" class="thumb" data-p="${p}" aria-label="تكبير صفحة ${ar(p)}"><img src="${pageSrc(subj,p)}" ${BOOK_H[subj]?`width="1211" height="${BOOK_H[subj]}"`:'width="1920" height="1080"'} alt="صفحة ${ar(p)} من ${BOOK_H[subj]?"كتاب":"ملخص"} ${NAMES[subj]}" loading="lazy"></button>`).join("")}</div>${subj==="i"?`<p class="ref" style="margin:0">وحلول أسئلة هذي الصفحات موجودة في <a href="books.html">الكتب المحلولة</a>.</p>`:subj==="d"||subj==="en"?`<p class="ref" style="margin:0">والكتاب كامل موجود في <a href="books.html">الكتب</a>.</p>`:""}</section>
     <div class="card"><b>بعد ما تخلص الدرس</b>
       <div class="actions">
         <button type="button" class="btn" id="lquiz">اختبر نفسك في الدرس (${ar(bankOf(subj,i).length)} سؤال)</button>
@@ -481,7 +493,7 @@ function quizStart(){
 function quizTop(){return `<button type="button" class="back" id="qchange">→ غيّر المادة أو الدرس</button>`}
 function bindTop(){$("qchange").onclick=()=>{renderSetup();window.scrollTo({top:0})}}
 const scopeName=()=>quizLesson==null?QNAMES[qs]:`${QNAMES[qs]} · ${qParts(qs)[quizLesson]}`;
-const refWhere=()=>qs==="i"?"الكتاب":"الملخص";
+const refWhere=()=>BOOK_H[qs]?"الكتاب":"الملخص";
 function renderQ(){
   const it=Q[qi];
   quizEl.innerHTML=`${quizTop()}
@@ -533,7 +545,7 @@ const sv=store.get("subj"), sm=store.get("mode");
 if(NAMES[sv])subj=sv; if(["learn","sum","cards","quiz"].includes(sm))mode=sm;
 const HM={learn:"learn",lessons:"learn",sum:"sum",summary:"sum",summaries:"sum",cards:"cards",quiz:"quiz",questions:"quiz"};
 if(HM[h])mode=HM[h];
-if(h==="social"||h==="s"||hs==="s")subj="s"; if(h==="tajweed"||h==="t"||hs==="t")subj="t"; if(h==="islamic"||h==="i"||hs==="i")subj="i"; if(h==="digital"||h==="d"||hs==="d")subj="d";
+if(h==="social"||h==="s"||hs==="s")subj="s"; if(h==="tajweed"||h==="t"||hs==="t")subj="t"; if(h==="islamic"||h==="i"||hs==="i")subj="i"; if(h==="digital"||h==="d"||hs==="d")subj="d"; if(h==="english"||h==="en"||hs==="en")subj="en";
 if(HM[h]==="quiz"&&QNAMES[hs])qs=hs;
 if(HM[h]==="learn"&&hl&&LESSONS[subj][Number(hl)-1])openLesson=Number(hl)-1;
 update();
