@@ -64,6 +64,7 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 
 /* summaries */
 .panel{display:flex;flex-direction:column;gap:18px}
+.sumlesson{margin-bottom:10px}.sumlesson>summary{cursor:pointer;display:flex;gap:10px;align-items:baseline;justify-content:space-between}.sumlesson[open]>summary{margin-bottom:12px}
 .sheet{margin:0;display:flex;flex-direction:column;gap:6px}
 .sheet button,.thumb{all:unset;cursor:zoom-in;display:block;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:#fff;box-shadow:0 1px 2px rgb(0 0 0 / .06)}
 .sheet button:focus-visible,.thumb:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
@@ -333,7 +334,7 @@ const tabs=[...document.querySelectorAll(".tab")], modes=[...document.querySelec
 function subtitle(k){
   const L=LESSONS[k].length;
   if(mode==="learn")return `${ar(L)} ${L>2&&L<11?"دروس":L>10?"درسًا":"درس"} · خلصت ${ar(done[k].length)}`;
-  if(mode==="sum")return k==="t"?"من ص ٩ إلى ص ٢٦ · ١٠ صفحات":k==="s"?"من ص ١٢ إلى ص ٦١ · ١٦ صفحة":k==="en"||k==="m"?"الكتاب كامل":"الكتاب المحلول";
+  if(mode==="sum")return k==="t"?"من ص ٩ إلى ص ٢٦ · ١٠ صفحات":k==="s"?"من ص ١٢ إلى ص ٦١ · ١٦ صفحة":`ملخص ${ar(LESSONS[k].length)} ${LESSONS[k].length>10?"درسًا":"دروس"}`;
   if(mode==="cards")return `${ar(BANK[k].length+(k==="s"?NUMS.length:0))} بطاقة`;
   return `${ar(BANK[k].length)} سؤالًا`;
 }
@@ -356,10 +357,11 @@ modes.forEach(b=>b.onclick=()=>{quizLesson=null;if(b.dataset.m==="quiz"){qs=null
 /* ===== الملخصات ===== */
 for(const k of Object.keys(NAMES)){
   const panel=$("panel-"+k);
-  if(k==="i"){panel.innerHTML=`<div class="card"><b>ملخص الدراسات الإسلامية</b><p style="margin:0">ما فيه ملخص PDF لهذي المادة، لكن الكتاب كامل موجود محلول صفحة صفحة في قسم «الكتب»، وكل درس في قسم «الدروس» مشروح وتحته صفحاته من الكتاب.</p><div class="actions"><a class="btn" href="books.html" style="text-decoration:none">افتح الكتاب المحلول</a><button type="button" class="btn ghost" id="sum-i-learn">روح للدروس</button></div></div>`;panel.querySelector("#sum-i-learn").onclick=()=>go("learn");continue}
-  if(k==="d"){panel.innerHTML=`<div class="card"><b>ملخص المهارات الرقمية</b><p style="margin:0">ما فيه ملخص PDF لهذي المادة، لكن الكتاب كامل (الفصلين) موجود في قسم «الكتب»، وكل درس في قسم «الدروس» مشروح وتحته صفحاته من الكتاب.</p><div class="actions"><a class="btn" href="books.html" style="text-decoration:none">افتح الكتاب</a><button type="button" class="btn ghost" id="sum-d-learn">روح للدروس</button></div></div>`;panel.querySelector("#sum-d-learn").onclick=()=>go("learn");continue}
-  if(k==="m"){panel.innerHTML=`<div class="card"><b>ملخص الرياضيات</b><p style="margin:0">ما فيه ملخص PDF لهذي المادة، لكن كتابي الرياضيات (الفصل الأول والثاني) موجودين في قسم «الكتب»، وكل درس في قسم «الدروس» مشروح بأمثلته وتحته صفحاته من الكتاب.</p><div class="actions"><a class="btn" href="books.html" style="text-decoration:none">افتح الكتاب</a><button type="button" class="btn ghost" id="sum-m-learn">روح للدروس</button></div></div>`;panel.querySelector("#sum-m-learn").onclick=()=>go("learn");continue}
-  if(k==="en"){panel.innerHTML=`<div class="card"><b>ملخص اللغة الإنجليزية</b><p style="margin:0">ما فيه ملخص PDF لهذي المادة، لكن كتاب Super Goal 1 كامل (الفصلين مع كتاب التمارين) موجود في قسم «الكتب»، وكل وحدة في قسم «الدروس» مشروحة بالعربي وتحتها صفحاتها من الكتاب.</p><div class="actions"><a class="btn" href="books.html" style="text-decoration:none">افتح الكتاب</a><button type="button" class="btn ghost" id="sum-en-learn">روح للدروس</button></div></div>`;panel.querySelector("#sum-en-learn").onclick=()=>go("learn");continue}
+  if(BOOK_H[k]){
+    /* ملخص كل درس: الشرح المبسّط نفسه، كل درس في بطاقة تنفتح وتنقفل */
+    panel.innerHTML=LESSONS[k].map((L,n)=>`<details class="card sumlesson"><summary><b>${ar(n+1)}. ${L.title}</b> <small class="ref">${L.pages}</small></summary>${L.html}<div class="actions"><button type="button" class="btn ghost" data-l="${n}">افتح الدرس بتمارينه</button></div></details>`).join("");
+    panel.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>{openLesson=Number(b.dataset.l);go("learn")});
+    continue}
   for(let i=1;i<=COUNT[k];i++){
     const fig=document.createElement("figure");fig.className="sheet";
     fig.innerHTML=`<button type="button" aria-label="تكبير صفحة ${ar(i)} من ${NAMES[k]}"><img src="${k}/${pad(i)}.jpg" width="1920" height="1080" alt="${NAMES[k]} – صفحة ${ar(i)}" loading="lazy"></button><figcaption>صفحة ${ar(i)} من ${ar(COUNT[k])}</figcaption>`;
