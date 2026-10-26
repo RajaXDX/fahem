@@ -3,7 +3,7 @@
   --bg:#fbf6e8; --surface:#fffdf8; --fg:#2b2219; --muted:#6b5f50; --line:#e9dfc8;
   --butter:#f6c844; --on-butter:#2b2219; --hl:#f6c844;
   --gold:#8a6212; --gold-soft:#fbefcc;
-  --tajweed:#17604b; --tajweed-soft:#e5f0ea; --social:#24498a; --social-soft:#e6ecf7; --digital:#6a3d9a; --digital-soft:#efe7f8; --english:#a3324a; --english-soft:#f8e6ea;
+  --tajweed:#17604b; --tajweed-soft:#e5f0ea; --social:#24498a; --social-soft:#e6ecf7; --digital:#6a3d9a; --digital-soft:#efe7f8; --english:#a3324a; --english-soft:#f8e6ea; --math:#a8520c; --math-soft:#fbeadb;
   --ok:#1f7a4d; --ok-soft:#e3f3ea; --bad:#b23a2a; --bad-soft:#f8e5e1;
   --hot:#f3c9a5; --mild:#f6e7b5; --cold:#d6e6f3; --water:#3d7bd1; --land:#c9a46a;
   --display:"Noto Kufi Arabic", "Segoe UI", Tahoma, sans-serif;
@@ -15,14 +15,14 @@
   --bg:#16120d; --surface:#201a13; --fg:#f4ecdc; --muted:#b4a791; --line:#3a3126;
   --butter:#f2c443; --on-butter:#2b2219; --hl:rgb(242 196 67 / .38);
   --gold:#edc35b; --gold-soft:#2e2615;
-  --tajweed:#72cfac; --tajweed-soft:#1a2c25; --social:#97b6f0; --social-soft:#1c2537; --digital:#c4a5ef; --digital-soft:#2a2238; --english:#f08fa3; --english-soft:#3a1d24;
+  --tajweed:#72cfac; --tajweed-soft:#1a2c25; --social:#97b6f0; --social-soft:#1c2537; --digital:#c4a5ef; --digital-soft:#2a2238; --english:#f08fa3; --english-soft:#3a1d24; --math:#f2a86b; --math-soft:#3a2617;
   --ok:#5fcf95; --ok-soft:#173026; --bad:#ef8a7a; --bad-soft:#3a1f1b;
   --hot:#5a3a22; --mild:#4a4224; --cold:#22384a; --water:#4f8fe0; --land:#a8864f; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#16120d; --surface:#201a13; --fg:#f4ecdc; --muted:#b4a791; --line:#3a3126;
   --butter:#f2c443; --on-butter:#2b2219; --hl:rgb(242 196 67 / .38);
   --gold:#edc35b; --gold-soft:#2e2615;
-  --tajweed:#72cfac; --tajweed-soft:#1a2c25; --social:#97b6f0; --social-soft:#1c2537; --digital:#c4a5ef; --digital-soft:#2a2238; --english:#f08fa3; --english-soft:#3a1d24;
+  --tajweed:#72cfac; --tajweed-soft:#1a2c25; --social:#97b6f0; --social-soft:#1c2537; --digital:#c4a5ef; --digital-soft:#2a2238; --english:#f08fa3; --english-soft:#3a1d24; --math:#f2a86b; --math-soft:#3a2617;
   --ok:#5fcf95; --ok-soft:#173026; --bad:#ef8a7a; --bad-soft:#3a1f1b;
   --hot:#5a3a22; --mild:#4a4224; --cold:#22384a; --water:#4f8fe0; --land:#a8864f; color-scheme:dark}
 

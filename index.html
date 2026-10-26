@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>فاهم · ملخصات أول متوسط</title>
-<meta name="description" content="فاهم: دروس مشروحة وتمارين وبطاقات حفظ وأسئلة في التجويد والاجتماعيات والدراسات الإسلامية والمهارات الرقمية واللغة الإنجليزية، وكتب محلولة للصف الأول المتوسط.">
+<meta name="description" content="فاهم: دروس مشروحة وتمارين وبطاقات حفظ وأسئلة في التجويد والاجتماعيات والدراسات الإسلامية والمهارات الرقمية واللغة الإنجليزية والرياضيات، وكتب محلولة للصف الأول المتوسط.">
 <meta name="theme-color" content="#fbf6e8">
 <meta property="og:title" content="فاهم · ذاكر، وصِر فاهم">
 <meta property="og:description" content="ملخصات ودروس وأسئلة للصف الأول المتوسط.">
@@ -51,6 +51,7 @@ h1{font-family:var(--display);font-size:clamp(2.2rem,7vw,3.6rem);line-height:1.3
 .quick[data-s="i"]{--acc:var(--gold);--acc-soft:var(--gold-soft)}
 .quick[data-s="d"]{--acc:var(--digital);--acc-soft:var(--digital-soft)}
 .quick[data-s="en"]{--acc:var(--english);--acc-soft:var(--english-soft)}
+.quick[data-s="m"]{--acc:var(--math);--acc-soft:var(--math-soft)}
 .again{appearance:none;border:0;background:none;color:var(--muted);font:inherit;font-size:.85rem;font-weight:600;cursor:pointer;padding:2px 4px}
 .again:hover{color:var(--fg)}
 .quick-q{font-family:var(--display);font-size:1.15rem;line-height:1.7;margin:0;text-wrap:balance}
@@ -77,6 +78,7 @@ h1{font-family:var(--display);font-size:clamp(2.2rem,7vw,3.6rem);line-height:1.3
 .subj img{display:block;width:100%;height:auto;aspect-ratio:16/9;border-bottom:1px solid var(--line)}
 .subj[data-s="d"]{--acc:var(--digital);--acc-soft:var(--digital-soft)}
 .subj[data-s="en"]{--acc:var(--english);--acc-soft:var(--english-soft)}
+.subj[data-s="m"]{--acc:var(--math);--acc-soft:var(--math-soft)}
 .subj-body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:12px}
 .subj h3{font-family:var(--display);font-size:1.35rem;margin:0;color:var(--acc);line-height:1.4}
 .meta{color:var(--muted);font-size:.88rem}
@@ -120,7 +122,7 @@ h1{font-family:var(--display);font-size:clamp(2.2rem,7vw,3.6rem);line-height:1.3
     <div class="pitch">
       <div class="eyebrow">الصف الأول المتوسط · الفصل الدراسي الأول</div>
       <h1>ذاكر، وصِر <mark class="hl">فاهم</mark></h1>
-      <p class="lead">دروس التجويد والاجتماعيات والدراسات الإسلامية والمهارات الرقمية واللغة الإنجليزية مشروحة خطوة بخطوة، ومعها ملخصات وتمارين وبطاقات حفظ وأسئلة، والكتب محلولة. كل اللي تحتاجه للتحديد في مكان واحد.</p>
+      <p class="lead">دروس التجويد والاجتماعيات والدراسات الإسلامية والمهارات الرقمية واللغة الإنجليزية والرياضيات مشروحة خطوة بخطوة، ومعها ملخصات وتمارين وبطاقات حفظ وأسئلة، والكتب محلولة. كل اللي تحتاجه للتحديد في مكان واحد.</p>
       <div class="cta">
         <a class="btn main" id="start" href="study.html#learn">ابدأ المذاكرة ←</a>
         <a class="btn ghost" href="study.html#quiz">اختبر نفسك</a>
@@ -173,9 +175,12 @@ h1{font-family:var(--display);font-size:clamp(2.2rem,7vw,3.6rem);line-height:1.3
 <script src="lessons_d.js?v=20261015"></script>
 <script src="bank_en.js?v=20261016"></script>
 <script src="lessons_en.js?v=20261016"></script>
+<script src="bank_m.js?v=20261026"></script>
+<script src="lessons_m.js?v=20261026"></script>
+<script src="lessons_m2.js?v=20261026"></script>
 <script>
-const NAMES={t:"التجويد",s:"الاجتماعيات",i:"الدراسات الإسلامية",d:"المهارات الرقمية",en:"اللغة الإنجليزية"};
-const PAGES={t:"من ص ٩ إلى ص ٢٦",s:"من ص ١٢ إلى ص ٦١",i:"الكتاب كامل",d:"الكتاب كامل (الفصلين)",en:"الكتاب كامل (الفصلين)"};
+const NAMES={t:"التجويد",s:"الاجتماعيات",i:"الدراسات الإسلامية",d:"المهارات الرقمية",en:"اللغة الإنجليزية",m:"الرياضيات"};
+const PAGES={t:"من ص ٩ إلى ص ٢٦",s:"من ص ١٢ إلى ص ٦١",i:"الكتاب كامل",d:"الكتاب كامل (الفصلين)",en:"الكتاب كامل (الفصلين)",m:"الكتابان كاملين (الفصلين)"};
 const SHEETS={t:10,s:16}, BOOK_PAGES=258+246, ALL_BOOK_PAGES=BOOK_PAGES+183+201+226+228+234+358+272;
 const ar=n=>n.toLocaleString("ar-SA");
 const $=id=>document.getElementById(id);
@@ -186,9 +191,10 @@ let done={t:[],s:[],i:[]};try{const d=JSON.parse(localStorage.getItem("done")||"
 if(!done.i)done.i=[];
 if(!done.d)done.d=[];
 if(!done.en)done.en=[];
+if(!done.m)done.m=[];
 
-const L=LESSONS.t.length+LESSONS.s.length+LESSONS.i.length+LESSONS.d.length+LESSONS.en.length, Q=BANK.t.length+BANK.s.length+BANK.i.length+BANK.d.length+BANK.en.length, C=Q+NUMS.length, S=SHEETS.t+SHEETS.s;
-if(done.t.length+done.s.length+done.i.length+done.d.length+done.en.length){const b=$("start");b.textContent="كمّل المذاكرة ←";b.href="study.html"}
+const L=LESSONS.t.length+LESSONS.s.length+LESSONS.i.length+LESSONS.d.length+LESSONS.en.length+LESSONS.m.length, Q=BANK.t.length+BANK.s.length+BANK.i.length+BANK.d.length+BANK.en.length+BANK.m.length, C=Q+NUMS.length, S=SHEETS.t+SHEETS.s;
+if(done.t.length+done.s.length+done.i.length+done.d.length+done.en.length+done.m.length){const b=$("start");b.textContent="كمّل المذاكرة ←";b.href="study.html"}
 
 $("stats").innerHTML=[[L,"دروس","درسًا"],[S,"صفحات ملخص","صفحة ملخص"],[Q,"أسئلة","سؤالًا"],[BOOK_PAGES,"صفحات محلولة","صفحة محلولة"]]
   .map(([n,f,m])=>{const t=count(n,f,m);const i=t.indexOf(" ");return `<li><b>${t.slice(0,i)}</b>${t.slice(i+1)}</li>`}).join("");
@@ -202,7 +208,7 @@ $("subjects").innerHTML=Object.keys(NAMES).map(k=>{
       <div class="prog"><div class="bar"><i style="width:${d/n*100}%"></i></div><span>${d?`خلصت ${ar(d)} من ${ar(n)}`:"ما بديت للحين"}</span></div>
       <div class="links">
         <a class="go" href="study.html#learn-${k}">${d?"كمّل الدروس":"ابدأ الدروس"}</a>
-        ${k==="i"?`<a href="books.html">الكتاب المحلول</a>`:k==="d"||k==="en"?`<a href="books.html">الكتاب</a>`:`<a href="study.html#summaries-${k}">الملخص</a>`}
+        ${k==="i"?`<a href="books.html">الكتاب المحلول</a>`:k==="d"||k==="en"||k==="m"?`<a href="books.html">الكتاب</a>`:`<a href="study.html#summaries-${k}">الملخص</a>`}
         <a href="study.html#cards-${k}">البطاقات</a>
         <a href="study.html#quiz-${k}">الأسئلة</a>
       </div>
@@ -227,7 +233,7 @@ $("feats").innerHTML=[
 /* سؤال سريع من بنك الأسئلة */
 const quick=$("quick");
 function ask(){
-  const x=Math.random()*Q, k=x<BANK.t.length?"t":x<BANK.t.length+BANK.s.length?"s":x<BANK.t.length+BANK.s.length+BANK.i.length?"i":x<BANK.t.length+BANK.s.length+BANK.i.length+BANK.d.length?"d":"en", r=BANK[k][Math.floor(Math.random()*BANK[k].length)];
+  const x=Math.random()*Q, k=x<BANK.t.length?"t":x<BANK.t.length+BANK.s.length?"s":x<BANK.t.length+BANK.s.length+BANK.i.length?"i":x<BANK.t.length+BANK.s.length+BANK.i.length+BANK.d.length?"d":x<BANK.t.length+BANK.s.length+BANK.i.length+BANK.d.length+BANK.en.length?"en":"m", r=BANK[k][Math.floor(Math.random()*BANK[k].length)];
   const opts=shuffle(r.slice(1,5));
   quick.dataset.s=k;
   quick.innerHTML=`<div class="quick-head"><span class="tag">سؤال سريع · ${NAMES[k]}</span><button type="button" class="again" id="again">سؤال ثاني ↻</button></div>
