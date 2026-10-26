@@ -77,10 +77,11 @@
 <script src="lessons_en.js?v=20261016"></script>
 <script src="lessons_m.js?v=20261026"></script>
 <script src="lessons_m2.js?v=20261026"></script>
+<script src="lessons_l.js?v=20261026"></script>
 <script>
 const $=id=>document.getElementById(id);
 const ar=Fahem.ar, S=Fahem.store;
-const NAMES={t:"التجويد",s:"الاجتماعيات",i:"الدراسات الإسلامية",d:"المهارات الرقمية",en:"اللغة الإنجليزية",m:"الرياضيات"};
+const NAMES={t:"التجويد",s:"الاجتماعيات",i:"الدراسات الإسلامية",d:"المهارات الرقمية",en:"اللغة الإنجليزية",m:"الرياضيات",l:"لغتي الخالدة"};
 const SUBJ=Object.keys(LESSONS).filter(k=>NAMES[k]);
 const json=(k,d)=>{try{return JSON.parse(S.get(k)||"null")??d}catch(e){return d}};
 let exams=json("exams",{}), reviews=json("planReview",{});

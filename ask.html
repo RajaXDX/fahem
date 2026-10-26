@@ -73,6 +73,8 @@
 <script src="bank_m.js?v=20261026"></script>
 <script src="lessons_m.js?v=20261026"></script>
 <script src="lessons_m2.js?v=20261026"></script>
+<script src="bank_l.js?v=20261026"></script>
+<script src="lessons_l.js?v=20261026"></script>
 <script src="finder.js?v=20261014"></script>
 <script>
 const $=id=>document.getElementById(id);
@@ -89,7 +91,7 @@ const WHO=`<span class="who"><span class="logo-mark" aria-hidden="true">ف</span
 function brief(t,max=380){t=String(t);if(t.length<=max)return t;const cut=t.slice(0,max);const i=Math.max(cut.lastIndexOf(" · "),cut.lastIndexOf("."),cut.lastIndexOf("،"));return cut.slice(0,i>max*.5?i:max).replace(/[ ·،.]+$/,"")+" …"}
 
 function source(d){
-  if(d.type==="q")return `من بنك أسئلة ${Finder.subjName(d)}${d.ref?` · راجعها في ${d.s==="i"||d.s==="d"||d.s==="en"||d.s==="m"?"الكتاب":"الملخص"} ${esc(d.ref)}`:""} · <a href="${d.url}">أسئلة أكثر</a>`;
+  if(d.type==="q")return `من بنك أسئلة ${Finder.subjName(d)}${d.ref?` · راجعها في ${d.s==="i"||d.s==="d"||d.s==="en"||d.s==="m"||d.s==="l"?"الكتاب":"الملخص"} ${esc(d.ref)}`:""} · <a href="${d.url}">أسئلة أكثر</a>`;
   if(d.type==="sol")return `من حل كتاب ${Finder.subjName(d)}، صفحة ${ar(d.page)} · <a href="${d.url}">افتح الصفحة</a>`;
   if(d.type==="num")return `من «أرقام لازم تحفظها» في الاجتماعيات · <a href="${d.url}">احفظها بالبطاقات</a>`;
   return `من درس «${esc(d.lesson)}» في ${Finder.subjName(d)} · <a href="${d.url}">افتح الدرس</a>`;

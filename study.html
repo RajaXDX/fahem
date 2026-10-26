@@ -29,8 +29,9 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .wrap[data-s="d"]{--acc:var(--digital);--acc-soft:var(--digital-soft)}
 .wrap[data-s="en"]{--acc:var(--english);--acc-soft:var(--english-soft)}
 .wrap[data-s="m"]{--acc:var(--math);--acc-soft:var(--math-soft)}
+.wrap[data-s="l"]{--acc:var(--lughati);--acc-soft:var(--lughati-soft)}
 
-.tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px}
+.tabs{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px}
 .tab{appearance:none;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:12px;padding:12px 14px;font:inherit;text-align:right;cursor:pointer;display:flex;flex-direction:column;gap:2px;min-width:0}
 .tab b{font-family:var(--display);font-size:1.05rem;font-weight:700}
 .tab span{font-size:.82rem;color:var(--muted)}
@@ -46,6 +47,8 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .tab[data-s="en"][aria-selected="true"] b{color:var(--english)}
 .tab[data-s="m"][aria-selected="true"]{border-color:var(--math);background:var(--math-soft)}
 .tab[data-s="m"][aria-selected="true"] b{color:var(--math)}
+.tab[data-s="l"][aria-selected="true"]{border-color:var(--lughati);background:var(--lughati-soft)}
+.tab[data-s="l"][aria-selected="true"] b{color:var(--lughati)}
 @media (max-width:760px){.tabs{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:480px){.tabs{gap:6px}.tab{padding:10px}.tab b{font-size:.95rem}.tab span{font-size:.72rem}}
 .thumbs.tall .thumb img{aspect-ratio:auto}
@@ -213,6 +216,8 @@ table.cmp.wide{min-width:560px}
 .spick[data-q="en"][aria-pressed="true"] b{color:var(--english)}
 .spick[data-q="m"][aria-pressed="true"]{border-color:var(--math);background:var(--math-soft)}
 .spick[data-q="m"][aria-pressed="true"] b{color:var(--math)}
+.spick[data-q="l"][aria-pressed="true"]{border-color:var(--lughati);background:var(--lughati-soft)}
+.spick[data-q="l"][aria-pressed="true"] b{color:var(--lughati)}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .q{font-family:var(--display);font-size:1.15rem;line-height:1.7;margin:0;text-wrap:balance}
 .opts{display:grid;gap:10px}
@@ -263,6 +268,7 @@ table.cmp.wide{min-width:560px}
     <button class="tab" role="tab" data-s="d" aria-selected="false"><b>المهارات الرقمية</b><span id="sub-d"></span></button>
     <button class="tab" role="tab" data-s="en" aria-selected="false"><b>الإنجليزي</b><span id="sub-en"></span></button>
     <button class="tab" role="tab" data-s="m" aria-selected="false"><b>الرياضيات</b><span id="sub-m"></span></button>
+    <button class="tab" role="tab" data-s="l" aria-selected="false"><b>لغتي</b><span id="sub-l"></span></button>
   </div>
 
   <section class="learn" id="learn"></section>
@@ -272,6 +278,7 @@ table.cmp.wide{min-width:560px}
   <section class="panel" id="panel-d" hidden></section>
   <section class="panel" id="panel-en" hidden></section>
   <section class="panel" id="panel-m" hidden></section>
+  <section class="panel" id="panel-l" hidden></section>
   <section class="cards" id="cards" hidden></section>
   <section class="quiz" id="quiz" hidden></section>
 
@@ -302,18 +309,21 @@ table.cmp.wide{min-width:560px}
 <script src="bank_m.js?v=20261026"></script>
 <script src="lessons_m.js?v=20261026"></script>
 <script src="lessons_m2.js?v=20261026"></script>
+<script src="bank_l.js?v=20261026"></script>
+<script src="lessons_l.js?v=20261026"></script>
 <script src="audio.js?v=20261014"></script>
 <script>
-const NAMES={t:"التجويد",s:"الاجتماعيات",i:"الدراسات الإسلامية",d:"المهارات الرقمية",en:"اللغة الإنجليزية",m:"الرياضيات"};
+const NAMES={t:"التجويد",s:"الاجتماعيات",i:"الدراسات الإسلامية",d:"المهارات الرقمية",en:"اللغة الإنجليزية",m:"الرياضيات",l:"لغتي الخالدة"};
 const QNAMES=NAMES;
 const qParts=k=>LESSONS[k].map(L=>L.title);
 /* الإسلامية والمهارات الرقمية والإنجليزي ما لها ملخص؛ صفحاتها من الكتاب نفسه (b/i و b/d و b/en) */
-const COUNT={t:10,s:16,i:246,d:358,en:272,m:2201};
-const BOOK_H={i:1454,d:1454,en:1535,m:1562}; /* ارتفاع صفحات الكتب (العرض ١٢١١) */
+const COUNT={t:10,s:16,i:246,d:358,en:272,m:2201,l:2242};
+const BOOK_H={i:1454,d:1454,en:1535,m:1562,l:1454}; /* ارتفاع صفحات الكتب (العرض ١٢١١) */
 /* الرياضيات كتابان: رقم الصفحة = الفصل × ١٠٠٠ + رقم الصورة في b/m1 أو b/m2 */
-const M_LAST={1:183,2:201};
-const pageName=(k,p)=>k==="m"?`ف${ar(Math.floor(p/1000))} ص ${ar(p%1000)}`:ar(p);
-const pageSrc=(k,p)=>k==="m"?`b/m${Math.floor(p/1000)}/${String(p%1000).padStart(3,"0")}.webp`:BOOK_H[k]?`b/${k}/${String(p).padStart(3,"0")}.webp`:`${k}/${String(p).padStart(2,"0")}.jpg`;
+/* مواد لها كتابان (فصلان أو جزءان) */
+const MULTI={m:{pre:"ف",last:{1:183,2:201}},l:{pre:"ج",last:{1:234,2:242}}};
+const pageName=(k,p)=>MULTI[k]?`${MULTI[k].pre}${ar(Math.floor(p/1000))} ص ${ar(p%1000)}`:ar(p);
+const pageSrc=(k,p)=>MULTI[k]?`b/${k}${Math.floor(p/1000)}/${String(p%1000).padStart(3,"0")}.webp`:BOOK_H[k]?`b/${k}/${String(p).padStart(3,"0")}.webp`:`${k}/${String(p).padStart(2,"0")}.jpg`;
 const ar=n=>n.toLocaleString("ar-SA");
 const pad=n=>String(n).padStart(2,"0");
 const $=id=>document.getElementById(id);
@@ -325,6 +335,7 @@ if(!done.i)done.i=[];
 if(!done.d)done.d=[];
 if(!done.en)done.en=[];
 if(!done.m)done.m=[];
+if(!done.l)done.l=[];
 const saveDone=()=>store.set("done",JSON.stringify(done));
 
 let mode="learn", subj="t", openLesson=null, quizLesson=null, cardDeck="all";
@@ -564,7 +575,7 @@ const sv=store.get("subj"), sm=store.get("mode");
 if(NAMES[sv])subj=sv; if(["learn","sum","cards","quiz"].includes(sm))mode=sm;
 const HM={learn:"learn",lessons:"learn",sum:"sum",summary:"sum",summaries:"sum",cards:"cards",quiz:"quiz",questions:"quiz"};
 if(HM[h])mode=HM[h];
-if(h==="social"||h==="s"||hs==="s")subj="s"; if(h==="tajweed"||h==="t"||hs==="t")subj="t"; if(h==="islamic"||h==="i"||hs==="i")subj="i"; if(h==="digital"||h==="d"||hs==="d")subj="d"; if(h==="english"||h==="en"||hs==="en")subj="en"; if(h==="math"||h==="m"||hs==="m")subj="m";
+if(h==="social"||h==="s"||hs==="s")subj="s"; if(h==="tajweed"||h==="t"||hs==="t")subj="t"; if(h==="islamic"||h==="i"||hs==="i")subj="i"; if(h==="digital"||h==="d"||hs==="d")subj="d"; if(h==="english"||h==="en"||hs==="en")subj="en"; if(h==="math"||h==="m"||hs==="m")subj="m"; if(h==="lughati"||h==="l"||hs==="l")subj="l";
 if(HM[h]==="quiz"&&QNAMES[hs])qs=hs;
 if(HM[h]==="learn"&&hl&&LESSONS[subj][Number(hl)-1])openLesson=Number(hl)-1;
 update();
@@ -572,10 +583,10 @@ update();
 /* ===== عارض الصفحات ===== */
 const lb=$("lb"),img=$("lb-img"),view=$("lb-view");
 let cur={k:"t",i:1};
-function render(){img.src=pageSrc(cur.k,cur.i);img.alt=`${NAMES[cur.k]} – صفحة ${pageName(cur.k,cur.i)}`;$("lb-label").textContent=cur.k==="m"?`${NAMES.m} · ${pageName("m",cur.i)}`:`${NAMES[cur.k]} · ${ar(cur.i)} / ${ar(COUNT[cur.k])}`}
+function render(){img.src=pageSrc(cur.k,cur.i);img.alt=`${NAMES[cur.k]} – صفحة ${pageName(cur.k,cur.i)}`;$("lb-label").textContent=MULTI[cur.k]?`${NAMES[cur.k]} · ${pageName(cur.k,cur.i)}`:`${NAMES[cur.k]} · ${ar(cur.i)} / ${ar(COUNT[cur.k])}`}
 function openLb(k,i){cur={k,i};view.classList.remove("zoom");$("lb-zoom").textContent="تكبير";render();lb.hidden=false;document.body.style.overflow="hidden";$("lb-close").focus()}
 function closeLb(){lb.hidden=true;document.body.style.overflow=""}
-function step(d){const n=cur.i+d;if(cur.k==="m"?(n%1000<1||n%1000>M_LAST[Math.floor(n/1000)]):(n<1||n>COUNT[cur.k]))return;cur.i=n;render();view.scrollTo(0,0)}
+function step(d){const n=cur.i+d;if(MULTI[cur.k]?(n%1000<1||n%1000>MULTI[cur.k].last[Math.floor(n/1000)]):(n<1||n>COUNT[cur.k]))return;cur.i=n;render();view.scrollTo(0,0)}
 $("lb-close").onclick=closeLb;
 $("lb-next").onclick=()=>step(1);
 $("lb-prev").onclick=()=>step(-1);
