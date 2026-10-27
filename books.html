@@ -68,6 +68,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 .q{font-weight:600}
 .a{white-space:pre-line;background:var(--ok-soft);border-radius:10px;padding:8px 12px;margin-top:4px}
 .pop b{display:block;white-space:pre-line;color:var(--acc)}
+.ans sup,.pop sup,.a sup{font-size:.65em;line-height:0}
 </style>
 </head>
 <body>
@@ -111,6 +112,7 @@ button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid 
 <script src="sol/i1.js?v=20261014b"></script><script src="sol/i2.js?v=20261014b"></script><script src="sol/i3.js?v=20261014b"></script><script src="sol/i4.js?v=20261014b"></script>
 <script src="sol/i5.js?v=20261014b"></script><script src="sol/i6.js?v=20261014b"></script><script src="sol/i7.js?v=20261014b"></script>
 <script src="sol/i8.js?v=20261014b"></script><script src="sol/i9.js?v=20261014b"></script><script src="sol/i10.js?v=20261014b"></script>
+<script src="sol/m1_1.js?v=1"></script><script src="sol/m1_2.js?v=1"></script>
 <script>
 const N={e:258,i:246,m1:183,m2:201,c1:226,c2:228,l1:234,l2:242,d:358,en:272};
 const NAME={e:"الاجتماعيات",i:"الدراسات الإسلامية",m1:"الرياضيات · الفصل الأول",m2:"الرياضيات · الفصل الثاني",c1:"العلوم · الفصل الأول",c2:"العلوم · الفصل الثاني",l1:"لغتي الخالدة · الجزء الأول",l2:"لغتي الخالدة · الجزء الثاني",d:"المهارات الرقمية · الفصلين",en:"اللغة الإنجليزية · Super Goal 1 (الفصلين)"};
@@ -133,6 +135,8 @@ const ar=n=>n.toLocaleString("ar-SA");
 const st={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 const $=id=>document.getElementById(id);
 const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+/* الأسس في حلول الرياضيات: ٣^٤ تنكتب ٣ وفوقها ٤ */
+const fmt=s=>esc(s).replace(/\^(−?[0-9٠-٩]+|[a-zA-Zء-ي])/g,"<sup>$1</sup>");
 const solvedCount=k=>Object.keys(SOL[k]).length;
 
 /* الكتاب ما ينختار تلقائيًا: الطالب يختار ثم يضغط «افتح الكتاب» */
@@ -179,7 +183,7 @@ function render(){
   /* الحلول اللي ما انحدد مكانها على الصفحة للحين تطلع تحت الصفحة */
   const rest=solved&&list?list.filter(([,a,b])=>!Array.isArray(a)&&!b):[], s=$("sol");
   s.hidden=!rest.length;
-  s.innerHTML=rest.length?`<h2>حلول هذه الصفحة</h2>`+rest.map(([q,a])=>`<div><div class="q">${esc(q)}</div><div class="a">${esc(a)}</div></div>`).join(""):"";
+  s.innerHTML=rest.length?`<h2>حلول هذه الصفحة</h2>`+rest.map(([q,a])=>`<div><div class="q">${esc(q)}</div><div class="a">${fmt(a)}</div></div>`).join(""):"";
   st.set("bm",solved?"1":"0");st.set("bp_"+book,page);
 }
 
@@ -192,7 +196,7 @@ function drawAnswers(list){
     parts.forEach(([t,bx])=>{
       if(!bx)return;
       const el=document.createElement("button");el.type="button";el.className="ans";
-      el.textContent=t;el.setAttribute("aria-expanded","false");el.setAttribute("aria-label",`${q}: ${t}`);
+      el.innerHTML=`<span>${fmt(t)}</span>`;el.setAttribute("aria-expanded","false");el.setAttribute("aria-label",`${q}: ${t.replace(/\^/g," أس ")}`);
       el.style.cssText=`left:${bx[0]}%;top:${bx[1]}%;width:${bx[2]-bx[0]}%;height:${bx[3]-bx[1]}%`;
       el.dataset.rows=bx[4]||1;el.dataset.h=(bx[3]-bx[1])*PAGE_H;
       if(bx[5])el.classList.add("one");
@@ -223,7 +227,7 @@ function pop(el,q,t,bx){
   pg.querySelectorAll(".pop").forEach(e=>e.remove());pg.querySelectorAll(".ans").forEach(e=>e.setAttribute("aria-expanded","false"));
   if(open)return;
   const p=document.createElement("div");p.className="pop";p.setAttribute("role","status");
-  p.innerHTML=`<small>${esc(q)}</small><b>${esc(t)}</b>`;
+  p.innerHTML=`<small>${esc(q)}</small><b>${fmt(t)}</b>`;
   const below=bx[3]<70;p.style[below?"top":"bottom"]=below?`calc(${bx[3]}% + 6px)`:`calc(${100-bx[1]}% + 6px)`;
   pg.appendChild(p);el.setAttribute("aria-expanded","true");
 }
